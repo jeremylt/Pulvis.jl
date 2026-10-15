@@ -1,0 +1,12 @@
+name = "julia_sph"
+uuid = "cbc3886f-6f98-48da-b488-8cb08f47fbb8"
+authors = ["Jeremy L Thompson <jeremy@jeremylt.org>"]
+version = "0.1.0"
+
+[deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+
+[compat]
+CUDA = "6.4"
+Enzyme = "0.13.216"

@@ -105,10 +105,7 @@ function momentumequationneighbors!(
         rij =
             view(position, (neighbor*dimension):((neighbor+1)*dimension)) -
             view(position, (particle*dimension):((particle+1)*dimension))
-        absdistance = distancebetweenparticles(
-            view(position, (particle*dimension):((particle+1)*dimension)),
-            view(position, (neighbor*dimension):((neighbor+1)*dimension)),
-        )
+        absdistance = norm(rij)
 
         # specific coefficient
         dWdrij = dwdrij(absdistance, radius[particle], distance)

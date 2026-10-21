@@ -120,8 +120,8 @@ function sumweightedmassneighbors!(
 )
     for neighbor = 1:numneighbors
         neighbor = neighbors[neighborid]
-        absdistance = distancebetweenparticles(
-            view(position, (particle*dimension):((particle+1)*dimension)),
+        absdistance = norm(
+            view(position, (particle*dimension):((particle+1)*dimension)) -
             view(position, (neighbor*dimension):((neighbor+1)*dimension)),
         )
 

@@ -152,8 +152,7 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij     = 3.0::
-support = 2.1
+rij = 3.0::support = 2.1
 
 # set cubic kernel
 setkernelshape(Kernel.cubicspline)
@@ -175,7 +174,8 @@ function w_cubicspline(rij, support, dimension::Int)
     q = rij * invh
 
     if q < 1.0
-        return (1.0 - 1.5 * q ^ 2 + 0.75 * q ^ 3) * normalizationconstant_cubicspline(invh, dimension)
+        return (1.0 - 1.5 * q ^ 2 + 0.75 * q ^ 3) *
+               normalizationconstant_cubicspline(invh, dimension)
     elseif q < 2.0
         return (0.25 * (2.0 - q) ^ 3) * normalizationconstant_cubicspline(invh, dimension)
     else
@@ -204,7 +204,7 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij     = 3.0
+rij = 3.0
 support = 2.1
 
 # set cubic kernel
@@ -227,9 +227,13 @@ function dwdrij_cubicspline(rij, support, dimension::Int)
     q = rij * invh
 
     if q < 1.0
-        return (-3.0 * q + 2.25 * q ^ 2) * invh * normalizationconstant_cubicspline(invh, dimension)
+        return (-3.0 * q + 2.25 * q ^ 2) *
+               invh *
+               normalizationconstant_cubicspline(invh, dimension)
     elseif q < 2.0
-        return (-0.75 * (2.0 - q) ^ 2) * invh * normalizationconstant_cubicspline(invh, dimension)
+        return (-0.75 * (2.0 - q) ^ 2) *
+               invh *
+               normalizationconstant_cubicspline(invh, dimension)
     else
         return 0.0
     end
@@ -256,7 +260,7 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij     = 3.0
+rij = 3.0
 support = 2.1
 
 # set cubic kernel
@@ -279,9 +283,14 @@ function d2wdrij2_cubicspline(rij, support, dimension)
     q = rij * invh
 
     if q < 1.0
-        return (-3.0 + 4.5 * q) * (invh ^ 2) * normalizationconstant_cubicspline(invh, dimension)
+        return (-3.0 + 4.5 * q) *
+               (invh ^ 2) *
+               normalizationconstant_cubicspline(invh, dimension)
     elseif q < 2.0
-        return 1.5 * (2.0 - q) * (invh ^ 2) * normalizationconstant_cubicspline(invh, dimension)
+        return 1.5 *
+               (2.0 - q) *
+               (invh ^ 2) *
+               normalizationconstant_cubicspline(invh, dimension)
     else
         return 0.0
     end

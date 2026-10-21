@@ -25,9 +25,9 @@ Compute the gradient of the kernel
 
 ```jldoctest
 # setup
-rij     = 3.0
+rij = 3.0
 support = 2.1
-eij     = [1.0/3.0, 2.0/3.0, 2.0/3.0]
+eij = [1.0/3.0, 2.0/3.0, 2.0/3.0]
 gradWij = [0.0, 0.0, 0.0]
 
 # verify
@@ -60,5 +60,5 @@ gradwij!(rij, support, eij, gradWij)
 ```
 """
 function gradwij!(rij, support, dimension::Int, eij::Array, gradWij::Array)
-   gradWij .= eij * dwdrij(rij, support, dimension)
+    gradWij .= eij * dwdrij(rij, support, dimension)
 end

@@ -150,8 +150,7 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij     = 3.0::
-support = 2.1
+rij = 3.0::support = 2.1
 
 # set quintic kernel
 setkernelshape(Kernel.quinticspline)
@@ -173,10 +172,12 @@ function w_quinticspline(rij, support, dimension)
     q = rij * invh
 
     if q < 1.0
-        return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5) * normalizationconstant_quinticspline(invh, dimension)
+        return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5) *
+               normalizationconstant_quinticspline(invh, dimension)
     elseif q < 2.0
-        return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5) * normalizationconstant_quinticspline(invh, dimension)
-    elseif
+        return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5) *
+               normalizationconstant_quinticspline(invh, dimension)
+    elseif q < 3.0
         return (3.0 - q)^5 * normalizationconstant_quinticspline(invh, dimension)
     else
         return 0.0
@@ -204,7 +205,7 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij     = 3.0
+rij = 3.0
 support = 2.1
 
 # set quintic kernel
@@ -227,11 +228,18 @@ function dwdrij_quinticspline(rij, support, dimension)
     q = rij * invh
 
     if q < 1.0
-        return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) * invh * normalizationconstant_quinticspline(invh, dimension)
+        return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) *
+               invh *
+               normalizationconstant_quinticspline(invh, dimension)
     elseif q < 2.0
-        return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) * invh * normalizationconstant_quinticspline(invh, dimension)
+        return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) *
+               invh *
+               normalizationconstant_quinticspline(invh, dimension)
     elseif q < 3.0
-        return -5.0 * (3.0 - q)^4 * invh * normalizationconstant_quinticspline(invh, dimension)
+        return -5.0 *
+               (3.0 - q)^4 *
+               invh *
+               normalizationconstant_quinticspline(invh, dimension)
     else
         return 0.0
     end
@@ -258,7 +266,7 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij     = 3.0
+rij = 3.0
 support = 2.1
 
 # set quintic kernel
@@ -281,11 +289,18 @@ function d2wdrij2_quinticspline(rij, support, dimension)
     q = rij * invh
 
     if q < 1.0
-        return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 *(1.0 - q)^3) * (invh ^ 2) * normalizationconstant_quinticspline(invh, dimension)
+        return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) *
+               (invh ^ 2) *
+               normalizationconstant_quinticspline(invh, dimension)
     elseif q < 2.0
-        return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) * (invh ^ 2) * normalizationconstant_quinticspline(invh, dimension)
+        return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) *
+               (invh ^ 2) *
+               normalizationconstant_quinticspline(invh, dimension)
     elseif q < 3.0
-        return 20.0 * (3.0 - q)^3 * (invh ^ 2) * normalizationconstant_quinticspline(invh, dimension)
+        return 20.0 *
+               (3.0 - q)^3 *
+               (invh ^ 2) *
+               normalizationconstant_quinticspline(invh, dimension)
     else
         return 0.0
     end

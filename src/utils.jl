@@ -1,4 +1,4 @@
-function distance_between_particles(positioni, positionj)
+function distancebetweenparticles(positioni, positionj)
     if dimension == 1
         return abs(positionj[1] - positioni[1])
     elseif dimension == 2

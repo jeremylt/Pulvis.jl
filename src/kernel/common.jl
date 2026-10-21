@@ -1,60 +1,64 @@
-module julia_sph
+# ------------------------------------------------------------------------------
+# common kernel functions
+# ------------------------------------------------------------------------------
 
-# Density
+"""
+```julia
+gradwij!(rij, support, eij, gradWij)
+```
 
-function sumweightedmassself!(particle, radius, mass, density)
-    density[particle] = w0(radius[particle]) * mass[particle]
+Compute the gradient of the kernel
+
+# Arguments:
+
+  - `rij::Float`:       distance between particles
+  - `support::Float`:   support raidus
+  - `dimension::Float`: spatial dimension
+  - `eij::Array`:       input array of normalized distance between particles
+  - `gradWij::Array`:   output array of kernel gradient
+
+# Returns:
+
+  - none
+
+# Example:
+
+```jldoctest
+# setup
+rij     = 3.0
+support = 2.1
+eij     = [1.0/3.0, 2.0/3.0, 2.0/3.0]
+gradWij = [0.0, 0.0, 0.0]
+
+# verify
+dimension = 1
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij[1] ≈ 42.0
+dimension = 2
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij[1:2] ≈ [42.0, 42.0]
+dimension = 3
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij ≈ [42.0, 42.0, 42.0]
+
+# set quintic kernel
+setkernelshape(Kernel.quinticspline)
+
+# verify
+dimension = 1
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij[1] ≈ 42.0
+dimension = 2
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij[1:2] ≈ [42.0, 42.0]
+dimension = 3
+gradwij!(rij, support, eij, gradWij)
+@assert gradwij ≈ [42.0, 42.0, 42.0]
+
+# output
+
+```
+"""
+function gradwij!(rij, support, dimension::Int, eij::Array, gradWij::Array)
+   gradWij .= eij * dwdrij(rij, support, dimension)
 end
-
-function sumweightedmassneighbors!(particle, numneighbors, neighbors, dimension, position, radius, mass, density)
-    for neighbor = 1:numneighbors
-        neighbor = neighbors[neighborid]
-        absdensity = distancebetweenparticles(position[particle * dimension], position[neighbor * dimension])
-        density[particle] += w(absdist, radius[particle]) * mass[particle];
-    end
-end
-
-function computedensity!()
-    particle = threadIdx().x
-    if particle <= length(density)
-        sumweightedmassself!(particle, radius, mass, density)
-        sumweightedmassneighbors!(particle, numneighbors, neighbors, dimension, position, radius, mass, density)
-    end
-end
-
-# Pressure
-
-function computepressure!()
-    particle = threadIdx().x
-    if particle <= length(pressure)
-        densitytopressure!(particle, density, initialdensity, view(pressure, particle:particle+1))
-    end
-end
-
-# Momentum
-
-function momentumequationneighbors!(particle, numneighbors, neighbors, dimension, typeids, position, radius, mass, density, pressure, velocity, acceleration, modifedvelocity, modifiedacceleration)
-    for neighborid = 1:numneighbors
-        neighbor = neighbors[neighborid]
-        particletype = typeids[particle]
-        neighbortype = typeids[neighbor]
-        # specific coefficient
-        dWdr = 
-        speccoeff = specificcoefficient(density[particle], density[neighbor], mass[particle], mass[neighbor], dwdr)
-        # pressure gradient
-        eij = 
-        pressuregradient!(density[particle], density[neighbor], pressure[particle], pressure[neighbor], speccoeff, eij, view(acceleration, particle*dimension:(particle+1)*dimension))
-        # shear forces
-        absdistance = distancebetweenparticles(position[particle * dimension], position[neighbor * dimension])
-        shearforces!(density[particle], density[neighbor], view(velocity, particle*dimension:(particle+1)*dimension), view(velocity, particle*dimension:(particle+1)*dimension), dimension + 2, dynamicviscosity[particletype], dynamicviscosity[neighbortype], bulkviscosity[particletype], bulkviscosity[neighbortype], absdistance, speccoeff, eij, view(acceleration, particle*dimension:(particle+1)*dimension))
-        # transport velocity
-end
-
-function accelerationaddmomentumcontribution!()
-    particle = threadIdx().x
-    if particle <= length(pressure)
-        momentumequationneighbors!(particle, numneighbors, neighbors, dimension, typeids, position, radius, mass, density, pressure, velocity, acceleration, modifedvelocity, modifiedacceleration)
-    end    
-end
-
-end # module julia_sph

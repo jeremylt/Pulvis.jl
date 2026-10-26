@@ -31,6 +31,9 @@ Sum the momentum contributions to the particle from neighbor particles
   - `particle::Int`:               index number of current particle
   - `numneighbors::Int`:           number of neighboring particles
   - `neighbors::Array`:            input array of neighbor particle index numbers
+  - `typeids::Array`:              input array of particle type ids
+  - `dynamicviscosity::Array`      input array of dynamic viscosity for each particle type
+  - `bulkviscosity::Array`         input array of bulk viscosity for each particle type
   - `dimension::Int`:              spatial dimension of problem
   - `position::Array`:             input array of particle positions
   - `radius::Array`:               input array of particle radi
@@ -81,22 +84,22 @@ sumweightedmassneighbors!(
 ```
 """
 function momentumequationneighbors!(
-    particle,
-    numneighbors,
-    neighbors,
-    typeids,
-    dynamicviscosity,
-    bulkviscosity,
-    dimension,
-    position,
-    radius,
-    mass,
-    density,
-    pressure,
-    velocity,
-    acceleration,
-    modifedvelocity,
-    modifiedacceleration,
+    particle::Int,
+    numneighbors::Int,
+    neighbors::Array,
+    typeids::Array,
+    dynamicviscosity::Array,
+    bulkviscosity::Array,
+    dimension::Int,
+    position::Array,
+    radius::Array,
+    mass::Array,
+    density::Array,
+    pressure::Array,
+    velocity::Array,
+    acceleration::Array,
+    modifedvelocity::Array,
+    modifiedacceleration::Array,
 )
     for neighborid = 1:numneighbors
         neighbor = neighbors[neighborid]

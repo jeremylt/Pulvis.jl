@@ -92,24 +92,24 @@ function momentumequationneighbors!(
         neighborid = neighborids[i]
         particletype = typeids[particleid]
         neighbortype = typeids[neighborid]
-        rij =
+        r_ij =
             view(r, ((neighborid-1)*dimension+1):(neighborid*dimension)) -
             view(r, ((particleid-1)*dimension+1):(particleid*dimension))
-        absdistance = norm(rij)
+        absdistance = norm(r_ij)
 
         # specific coefficient
-        dWdrij = dwdrij(absdistance, radius[particleid], absdistance)
+        dWdr_ij = dwdrij(absdistance, radius[particleid], absdistance)
 
         speccoeff = specificcoefficient(
             ρ[particleid],
             ρ[neighborid],
             m[particleid],
             m[neighborid],
-            dWdrij,
+            dWdr_ij,
         )
 
         # pressure gradient
-        eij = (-1.0 / absdistance) * rij
+        e_ij = (-1.0 / absdistance) * r_ij
 
         pressuregradient!(
             ρ[particleid],
@@ -117,7 +117,7 @@ function momentumequationneighbors!(
             p[particleid],
             p[neighborid],
             speccoeff,
-            eij,
+            e_ij,
             view(a, ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
@@ -134,7 +134,7 @@ function momentumequationneighbors!(
             μ_bulk[neighbortype],
             absdistance,
             speccoeff,
-            eij,
+            e_ij,
             view(a, ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 

@@ -134,14 +134,14 @@ end
 
 """
 ```julia
-w(rij, support, dimension)
+w(r_ij, support, dimension)
 ```
 
 Compute the kernel interaction
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -153,7 +153,7 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
@@ -161,21 +161,21 @@ setkernelshape(Kernel.CubicSpline)
 # verify
 dimension = 1
 support = 4.1
-@assert w(rij, support, dimension) ≈ 0.08739120777258463
+@assert w(r_ij, support, dimension) ≈ 0.08739120777258463
 dimension = 2
 support = 2.1
-@assert w(rij, support, dimension) ≈ 8.90729017394992e-5
+@assert w(r_ij, support, dimension) ≈ 8.90729017394992e-5
 dimension = 3
 support = 1.1
-@assert w(rij, support, dimension) ≈ 0.0
+@assert w(r_ij, support, dimension) ≈ 0.0
 
 # output
 
 ```
 """
-function w_CubicSpline(rij, support, dimension::Int)
+function w_CubicSpline(r_ij, support, dimension::Int)
     invh = 2.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return (1.0 - 1.5 * q ^ 2 + 0.75 * q ^ 3) *
@@ -189,14 +189,14 @@ end
 
 """
 ```julia
-dwdrij(rij, support, dimension)
+dwdrij(r_ij, support, dimension)
 ```
 
 Compute the first derivative of the kernel
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -208,7 +208,7 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
@@ -216,21 +216,21 @@ setkernelshape(Kernel.CubicSpline)
 # verify
 dimension = 1
 support = 1.1
-@assert dwdrij(rij, support, dimension) ≈ 0.0
+@assert dwdrij(r_ij, support, dimension) ≈ 0.0
 dimension = 2
 support = 4.1
-@assert dwdrij(rij, support, dimension) ≈ -0.04144734555284528
+@assert dwdrij(r_ij, support, dimension) ≈ -0.04144734555284528
 dimension = 3
 support = 2.1
-@assert dwdrij(rij, support, dimension) ≈ -0.0017814580347899822
+@assert dwdrij(r_ij, support, dimension) ≈ -0.0017814580347899822
 
 # output
 
 ```
 """
-function dwdrij_CubicSpline(rij, support, dimension::Int)
+function dwdrij_CubicSpline(r_ij, support, dimension::Int)
     invh = 2.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return (-3.0 * q + 2.25 * q ^ 2) *
@@ -247,14 +247,14 @@ end
 
 """
 ```julia
-d2wdrij2(rij, support, dimension)
+d2wdrij2(r_ij, support, dimension)
 ```
 
 Compute the second derivative of the kernel
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -266,7 +266,7 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
@@ -274,21 +274,21 @@ setkernelshape(Kernel.CubicSpline)
 # verify
 dimension = 1
 support = 2.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.08227024747918829
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.08227024747918829
 dimension = 2
 support = 1.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.0
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.0
 dimension = 3
 support = 4.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.012222831393632876
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.012222831393632876
 
 # output
 
 ```
 """
-function d2wdrij2_CubicSpline(rij, support, dimension::Int)
+function d2wdrij2_CubicSpline(r_ij, support, dimension::Int)
     invh = 2.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return (-3.0 + 4.5 * q) *

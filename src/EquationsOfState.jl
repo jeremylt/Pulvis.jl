@@ -6,9 +6,6 @@
 include("EquationsOfState/GenTait.jl")
 include("EquationsOfState/IdealGas.jl")
 
-# default kernel - GenTait
-densitytopressure = densitytopressure_GenTait;
-
 """
 ```julia
 setequationsofstate(equationstype)
@@ -51,3 +48,6 @@ function setequationsofstate(equationstype::EquationOfState.Type)
     end
     return nothing
 end
+
+# default kernel - GenTait
+setequationsofstate(EquationOfState.GenTait)

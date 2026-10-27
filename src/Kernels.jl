@@ -3,17 +3,9 @@
 # ------------------------------------------------------------------------------
 
 # source files
-include("Kernel/Common.jl")
-include("Kernel/CubicSpline.jl")
-include("Kernel/QuinticSpline.jl")
-
-# default kernel - cubic spline
-smoothinglength = smoothinglength_CubicSpline;
-normalizationconstant = normalizationconstant_CubicSpline;
-w0 = w0_CubicSpline;
-w = w_CubicSpline;
-dwdrij = dwdrij_CubicSpline;
-d2wdrij2 = d2wdrij2_CubicSpline;
+include("Kernels/Common.jl")
+include("Kernels/CubicSpline.jl")
+include("Kernels/QuinticSpline.jl")
 
 """
 ```julia
@@ -67,3 +59,6 @@ function setkernelshape(shape::Kernel.Shape)
     end
     return nothing
 end
+
+# default kernel - cubic spline
+setkernelshape(Kernel.CubicSpline)

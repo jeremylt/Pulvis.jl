@@ -9,12 +9,13 @@ using LinearAlgebra
 
 # Utilities
 include("Enums.jl")
-include("Kernel.jl")
+include("Kernels.jl")
 include("Utilities.jl")
 
 # Physics
 include("Density.jl")
 include("EquationsOfState.jl")
+include("MomentumFormulations.jl")
 include("Momentum.jl")
 
 # Hardware specific implementations

@@ -139,7 +139,7 @@ Compute the kernel interaction
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -151,7 +151,7 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
@@ -159,24 +159,24 @@ setkernelshape(Kernel.QuinticSpline)
 # verify
 dimension = 1
 support = 8.1
-@assert w(rij, support, dimension) ≈ 0.12308673182572215
+@assert w(r_ij, support, dimension) ≈ 0.12308673182572215
 dimension = 1
 support = 4.1
-@assert w(rij, support, dimension) ≈ 0.050604928977178415
+@assert w(r_ij, support, dimension) ≈ 0.050604928977178415
 dimension = 2
 support = 2.1
-@assert w(rij, support, dimension) ≈ 5.660228850077883e-7
+@assert w(r_ij, support, dimension) ≈ 5.660228850077883e-7
 dimension = 3
 support = 1.1
-@assert w(rij, support, dimension) ≈ 0.0
+@assert w(r_ij, support, dimension) ≈ 0.0
 
 # output
 
 ```
 """
-function w_QuinticSpline(rij, support, dimension)
+function w_QuinticSpline(r_ij, support, dimension)
     invh = 3.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5) *
@@ -193,14 +193,14 @@ end
 
 """
 ```julia
-dwdrij(rij, support, dimension)
+dwdrij(r_ij, support, dimension)
 ```
 
 Compute the first derivative of the kernel
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -212,7 +212,7 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
@@ -220,24 +220,24 @@ setkernelshape(Kernel.QuinticSpline)
 # verify
 dimension = 1
 support = 1.1
-@assert dwdrij(rij, support, dimension) ≈ 0.0
+@assert dwdrij(r_ij, support, dimension) ≈ 0.0
 dimension = 1
 support = 8.1
-@assert dwdrij(rij, support, dimension) ≈ -0.06306498329433108
+@assert dwdrij(r_ij, support, dimension) ≈ -0.06306498329433108
 dimension = 2
 support = 4.1
-@assert dwdrij(rij, support, dimension) ≈ -0.04635974146374518
+@assert dwdrij(r_ij, support, dimension) ≈ -0.04635974146374518
 dimension = 3
 support = 2.1
-@assert dwdrij(rij, support, dimension) ≈ -2.3070798053015142e-5
+@assert dwdrij(r_ij, support, dimension) ≈ -2.3070798053015142e-5
 
 # output
 
 ```
 """
-function dwdrij_QuinticSpline(rij, support, dimension)
+function dwdrij_QuinticSpline(r_ij, support, dimension)
     invh = 3.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) *
@@ -259,14 +259,14 @@ end
 
 """
 ```julia
-d2wdrij2(rij, support, dimension)
+d2wdrij2(r_ij, support, dimension)
 ```
 
 Compute the second derivative of the kernel
 
 # Arguments:
 
-  - `rij::Float`:     distance between the points
+  - `r_ij::Float`:    distance between the points
   - `support::Float`: support radius
   - `dimension::Int`: spatial dimension
 
@@ -278,7 +278,7 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 2.0
+r_ij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
@@ -286,24 +286,24 @@ setkernelshape(Kernel.QuinticSpline)
 # verify
 dimension = 1
 support = 2.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.0014166432920523402
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.0014166432920523402
 dimension = 1
 support = 1.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.0
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.0
 dimension = 2
 support = 8.1
-@assert d2wdrij2(rij, support, dimension) ≈ -0.00032958756972976803
+@assert d2wdrij2(r_ij, support, dimension) ≈ -0.00032958756972976803
 dimension = 3
 support = 4.1
-@assert d2wdrij2(rij, support, dimension) ≈ 0.03013882982464853
+@assert d2wdrij2(r_ij, support, dimension) ≈ 0.03013882982464853
 
 # output
 
 ```
 """
-function d2wdrij2_QuinticSpline(rij, support, dimension)
+function d2wdrij2_QuinticSpline(r_ij, support, dimension)
     invh = 3.0 / support
-    q = rij * invh
+    q = r_ij * invh
 
     if q < 1.0
         return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) *

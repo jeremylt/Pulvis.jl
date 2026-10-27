@@ -2,8 +2,6 @@
 # Density computation at a single point
 # ------------------------------------------------------------------------------
 
-using LinearAlgebra
-
 """
 ```julia
 sumweightedmassself!(particleid, radius, m, ρ)

@@ -4,6 +4,9 @@
 
 module Pulvis
 
+# Dependencies
+using LinearAlgebra
+
 # Utilities
 include("Enums.jl")
 include("Kernel.jl")

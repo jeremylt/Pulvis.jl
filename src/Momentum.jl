@@ -93,8 +93,8 @@ function momentumequationneighbors!(
         particletype = typeids[particleid]
         neighbortype = typeids[neighborid]
         rij =
-            view(r, (neighborid*dimension):((neighborid+1)*dimension-1)) -
-            view(r, (particleid*dimension):((particleid+1)*dimension-1))
+            view(r, ((neighborid-1)*dimension+1):(neighborid*dimension)) -
+            view(r, ((particleid-1)*dimension+1):(particleid*dimension))
         absdistance = norm(rij)
 
         # specific coefficient
@@ -118,15 +118,15 @@ function momentumequationneighbors!(
             p[neighborid],
             speccoeff,
             eij,
-            view(a, (particleid*dimension):((particleid+1)*dimension-1)),
+            view(a, ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
         # shear forces
         shearforces!(
             ρ[particleid],
             ρ[neighborid],
-            view(v, (particleid*dimension):((particleid+1)*dimension-1)),
-            view(v, (neighborid*dimension):((neighborid+1)*dimension-1)),
+            view(v, ((particleid-1)*dimension+1):(particleid*dimension)),
+            view(v, ((neighborid-1)*dimension+1):(neighborid*dimension)),
             dimension + 2,
             μ_dynamic[particletype],
             μ_dynamic[neighbortype],
@@ -135,7 +135,7 @@ function momentumequationneighbors!(
             absdistance,
             speccoeff,
             eij,
-            view(a, (particleid*dimension):((particleid+1)*dimension-1)),
+            view(a, ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
         # transport velocity

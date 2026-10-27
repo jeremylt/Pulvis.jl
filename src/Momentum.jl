@@ -5,22 +5,21 @@
 """
 ```julia
 momentumequationneighbors!(
-    particle,
-    numneighbors,
-    neighbors,
+    particleid,
+    neighborids,
     typeids,
-    dynamicviscosity,
-    bulkviscosity,
+    μ_dynamic,
+    μ_bulk,
     dimension,
-    position,
+    r,
     radius,
-    mass,
-    density,
-    pressure,
-    velocity,
-    acceleration,
-    modifiedvelocity,
-    modifiendacceleration,
+    m,
+    ρ,
+    p,
+    v,
+    a,
+    v_modified,
+    a_modified,
 )
 ```
 
@@ -28,22 +27,21 @@ Sum the momentum contributions to the particle from neighbor particles
 
 # Arguments:
 
-  - `particle::Int`:               index number of current particle
-  - `numneighbors::Int`:           number of neighboring particles
-  - `neighbors::Array`:            input array of neighbor particle index numbers
-  - `typeids::Array`:              input array of particle type ids
-  - `dynamicviscosity::Array`      input array of dynamic viscosity for each particle type
-  - `bulkviscosity::Array`         input array of bulk viscosity for each particle type
-  - `dimension::Int`:              spatial dimension of problem
-  - `position::Array`:             input array of particle positions
-  - `radius::Array`:               input array of particle radi
-  - `mass::Array`:                 input array of particle masses
-  - `density::Array`:              input array of particle densities
-  - `pressure::Array`:             input array of particle pressures
-  - `velocity::Array`:             input array of particle velocities
-  - `acceleration::Array`:         input array of particle acceleration
-  - `modifiedvelocity::Array`:     output array of modified particle velocities
-  - `modifiedacceleration::Array`: output array of modified particle acceleration
+  - `particle::Int`:       index number of current particle
+  - `neighborids::Array`:  input array of neighbor particle indices
+  - `typeids::Array`:      input array of particle type ids
+  - `μ_dynamic::Array`     input array of dynamic viscosity for each particle type
+  - `μ_bulk::Array`        input array of bulk viscosity for each particle type
+  - `dimension::Int`:      spatial dimension of problem
+  - `r::Array`:            input array of particle positions
+  - `radius::Array`:       input array of particle radi
+  - `m::Array`:            input array of particle masses
+  - `ρ::Array`:            input array of particle densities
+  - `p::Array`:            input array of particle pressures
+  - `v::Array`:            input array of particle velocities
+  - `a::Array`:            input array of particle acceleration
+  - `v_modified::Array`:   output array of modified particle velocities
+  - `a_modified::Array`:   output array of modified particle acceleration
 
 # Returns:
 
@@ -53,102 +51,91 @@ Sum the momentum contributions to the particle from neighbor particles
 
 ```jldoctest
 # setup
-particle = 1
-numneighbors = 2
-neighbors = [2, 3]
+particleid = 1
+neighborids = [3, 5, 2, 3]
 dimension = 2
-position = [1.0, 1.0, 1.1, 1.2, 1.3, 1.4]
+r = [1.0, 1.0, 1.1, 1.2, 1.3, 1.4]
 radius = [1.0, 1.1, 1, 2]
-mass = [42.0, 13.0, 14.0]
-density = [1.0, 0.0, 0.0]
+m = [42.0, 13.0, 14.0]
+ρ = [1.0, 0.0, 0.0]
 
 # compute density
-sumweightedmassneighbors!(
-    particle,
-    numneighbors,
-    neighbors,
-    dimension,
-    position,
-    radius,
-    mass,
-    density,
-)
+sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
 
 # verify
-@assert density[particle] ≈ 42.0
-@assert density[neighbors[1]] = 0.0
-@assert density[neighbors[2]] = 0.0
+@assert ρ[particleid] ≈ 42.0
+@assert ρ[neighborids[3]] = 0.0
+@assert ρ[neighborids[4]] = 0.0
 
 # output
 
 ```
 """
 function momentumequationneighbors!(
-    particle::Int,
-    numneighbors::Int,
-    neighbors::Array,
+    particleid::Int,
+    neighborids::Array,
     typeids::Array,
-    dynamicviscosity::Array,
-    bulkviscosity::Array,
+    μ_dynamic::Array,
+    μ_bulk::Array,
     dimension::Int,
-    position::Array,
+    r::Array,
     radius::Array,
-    mass::Array,
-    density::Array,
-    pressure::Array,
-    velocity::Array,
-    acceleration::Array,
-    modifedvelocity::Array,
-    modifiedacceleration::Array,
+    m::Array,
+    ρ::Array,
+    p::Array,
+    v::Array,
+    a::Array,
+    v_modified::Array,
+    a_modified::Array,
 )
-    for neighborid = 1:numneighbors
-        neighbor = neighbors[neighborid]
-        particletype = typeids[particle]
-        neighbortype = typeids[neighbor]
+    for i = neighborids[particleid]:(neighborids[particleid+1]-1)
+        neighborid = neighborids[i]
+        particletype = typeids[particleid]
+        neighbortype = typeids[neighborid]
         rij =
-            view(position, (neighbor*dimension):((neighbor+1)*dimension)) -
-            view(position, (particle*dimension):((particle+1)*dimension))
+            view(r, (neighborid*dimension):((neighborid+1)*dimension-1)) -
+            view(r, (particleid*dimension):((particleid+1)*dimension-1))
         absdistance = norm(rij)
 
         # specific coefficient
-        dWdrij = dwdrij(absdistance, radius[particle], distance)
+        dWdrij = dwdrij(absdistance, radius[particleid], absdistance)
 
         speccoeff = specificcoefficient(
-            density[particle],
-            density[neighbor],
-            mass[particle],
-            mass[neighbor],
-            dwdr,
+            ρ[particleid],
+            ρ[neighborid],
+            m[particleid],
+            m[neighborid],
+            dWdrij,
         )
 
         # pressure gradient
         eij = (-1.0 / absdistance) * rij
 
         pressuregradient!(
-            density[particle],
-            density[neighbor],
-            pressure[particle],
-            pressure[neighbor],
+            ρ[particleid],
+            ρ[neighborid],
+            p[particleid],
+            p[neighborid],
             speccoeff,
             eij,
-            view(acceleration, (particle*dimension):((particle+1)*dimension)),
+            view(a, (particleid*dimension):((particleid+1)*dimension-1)),
         )
 
         # shear forces
         shearforces!(
-            density[particle],
-            density[neighbor],
-            view(velocity, (particle*dimension):((particle+1)*dimension)),
-            view(velocity, (neighbor*dimension):((neighbor+1)*dimension)),
+            ρ[particleid],
+            ρ[neighborid],
+            view(v, (particleid*dimension):((particleid+1)*dimension-1)),
+            view(v, (neighborid*dimension):((neighborid+1)*dimension-1)),
             dimension + 2,
-            dynamicviscosity[particletype],
-            dynamicviscosity[neighbortype],
-            bulkviscosity[particletype],
-            bulkviscosity[neighbortype],
+            μ_dynamic[particletype],
+            μ_dynamic[neighbortype],
+            μ_bulk[particletype],
+            μ_bulk[neighbortype],
             absdistance,
             speccoeff,
             eij,
-            view(acceleration, (particle*dimension):((particle+1)*dimension)),
+            view(a, (particleid*dimension):((particleid+1)*dimension-1)),
         )
 
         # transport velocity

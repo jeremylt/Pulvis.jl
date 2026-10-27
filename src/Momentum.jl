@@ -64,8 +64,8 @@ sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
 
 # verify
 @assert ρ[particleid] ≈ 42.0
-@assert ρ[neighborids[3]] = 0.0
-@assert ρ[neighborids[4]] = 0.0
+@assert ρ[neighborids[3]] ≈ 0.0
+@assert ρ[neighborids[4]] ≈ 0.0
 
 # output
 
@@ -140,4 +140,5 @@ function momentumequationneighbors!(
 
         # transport velocity
     end
+    return nothing
 end

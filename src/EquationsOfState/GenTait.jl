@@ -54,4 +54,5 @@ function densitytopressure_GenTait!(particleid, ρ, ρ0, c, refdensityfactor, ex
         p0 = c^2 * ρ0 / exponent
         p[particleid] = p0 * ((ρ[particleid] / ρ0)^exponent - refdensityfactor)
     end
+    return nothing
 end

@@ -61,17 +61,18 @@ Compute the normalization constant of the kernel
 ```jldoctest
 # setup
 support = 2.1
+invh = 1.0 / support
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
-@assert normalizationconstant(support, dimension) ≈ (2.0 / 3.0) * (1.0 / support)
+@assert normalizationconstant(invh, dimension) ≈ (2.0 / 3.0) * (1.0 / support)
 dimension = 2
-@assert normalizationconstant(support, dimension) ≈ (10.0 / 7.0) / π * (1.0 / support)^2
+@assert normalizationconstant(invh, dimension) ≈ (10.0 / 7.0) / π * (1.0 / support)^2
 dimension = 3
-@assert normalizationconstant(support, dimension) ≈ (1.0 / π) * (1.0 / support)^3
+@assert normalizationconstant(invh, dimension) ≈ (1.0 / π) * (1.0 / support)^3
 
 # output
 
@@ -117,11 +118,11 @@ setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
-@assert w0(support, dimension) ≈ (2.0 / 3.0) * (1.0 / (2.0 / support))
+@assert w0(support, dimension) ≈ (2.0 / 3.0) * (2.0 / support)
 dimension = 2
-@assert w0(support, dimension) ≈ (10.0 / 7.0) / π * (1.0 / (2.0 / support))^2
+@assert w0(support, dimension) ≈ (10.0 / 7.0) / π * (2.0 / support)^2
 dimension = 3
-@assert w0(support, dimension) ≈ (1.0 / π) * (1.0 / (2.0 / support))^3
+@assert w0(support, dimension) ≈ (1.0 / π) * (2.0 / support)^3
 
 # output
 
@@ -152,17 +153,20 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij = 3.0::support = 2.1
+rij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
-@assert w(rij, support, dimension) ≈ 4.2
+support = 4.1
+@assert w(rij, support, dimension) ≈ 0.08739120777258463
 dimension = 2
-@assert w(rij, support, dimension) ≈ 42.0
+support = 2.1
+@assert w(rij, support, dimension) ≈ 8.90729017394992e-5
 dimension = 3
+support = 1.1
 @assert w(rij, support, dimension) ≈ 0.0
 
 # output
@@ -204,19 +208,21 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 3.0
-support = 2.1
+rij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
-@assert dwdrij(rij, support, dimension) ≈ 4.2
-dimension = 2
-@assert dwdrij(rij, support, dimension) ≈ 42.0
-dimension = 3
+support = 1.1
 @assert dwdrij(rij, support, dimension) ≈ 0.0
+dimension = 2
+support = 4.1
+@assert dwdrij(rij, support, dimension) ≈ -0.04144734555284528
+dimension = 3
+support = 2.1
+@assert dwdrij(rij, support, dimension) ≈ -0.0017814580347899822
 
 # output
 
@@ -260,25 +266,27 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 3.0
-support = 2.1
+rij = 2.0
 
 # set cubic kernel
 setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
-@assert d2wdrij2(rij, support, dimension) ≈ 4.2
+support = 2.1
+@assert d2wdrij2(rij, support, dimension) ≈ 0.08227024747918829
 dimension = 2
-@assert d2wdrij2(rij, support, dimension) ≈ 42.0
-dimension = 3
+support = 1.1
 @assert d2wdrij2(rij, support, dimension) ≈ 0.0
+dimension = 3
+support = 4.1
+@assert d2wdrij2(rij, support, dimension) ≈ 0.012222831393632876
 
 # output
 
 ```
 """
-function d2wdrij2_CubicSpline(rij, support, dimension)
+function d2wdrij2_CubicSpline(rij, support, dimension::Int)
     invh = 2.0 / support
     q = rij * invh
 

@@ -43,10 +43,11 @@ setequationsofstate(EquationOfState.IdealGas)
 
 ```
 """
-function setequationsofstate(equationstype::EquationOfState.type)
+function setequationsofstate(equationstype::EquationOfState.Type)
     if equationstype == EquationOfState.GenTait
-        densitytopressure = densitytopressure_GenTait
+        global densitytopressure = densitytopressure_GenTait
     elseif equationstype == EquationOfState.IdealGas
-        densitytopressure = densitytopressure_IdealGas
+        global densitytopressure = densitytopressure_IdealGas
     end
+    return nothing
 end

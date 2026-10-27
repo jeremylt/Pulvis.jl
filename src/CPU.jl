@@ -36,6 +36,7 @@ function computedensity_cpu!(
         sumweightedmassself!(particleid, radius, m, ρ)
         sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
     end
+    return nothing
 end
 
 # ------------------------------------------------------------------------------
@@ -85,6 +86,7 @@ function computepressure_cpu!(
             p,
         )
     end
+    return nothing
 end
 
 # ------------------------------------------------------------------------------
@@ -168,4 +170,5 @@ function computeforces_cpu!(
             a_modified,
         )
     end
+    return nothing
 end

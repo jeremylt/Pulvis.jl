@@ -38,6 +38,7 @@ function computedensity_particle!(
         sumweightedmassself!(particleid, radius, m, ρ)
         sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
     end
+    return nothing
 end
 
 """
@@ -76,6 +77,7 @@ function computedensity_cuda!(
         m,
         ρ,
     )
+    return nothing
 end
 
 # ------------------------------------------------------------------------------
@@ -127,6 +129,7 @@ function computepressure_particle!(
             p,
         )
     end
+    return nothing
 end
 
 """
@@ -168,6 +171,7 @@ function computepressure_cuda!(
         exponent,
         p,
     )
+    return nothing
 end
 
 # ------------------------------------------------------------------------------
@@ -253,6 +257,7 @@ function computeforces_cuda!(
             a_modified,
         )
     end
+    return nothing
 end
 
 """
@@ -329,4 +334,5 @@ function computeforces_cuda!(
         v_modified,
         a_modified,
     )
+    return nothing
 end

@@ -27,7 +27,7 @@ support = 2.1
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
-@assert smoothinglength(support) ≈ support / 2.0
+@assert smoothinglength(support) ≈ support / 3.0
 
 # output
 
@@ -59,17 +59,18 @@ Compute the normalization constant of the kernel
 ```jldoctest
 # setup
 support = 2.1
+invh = 1.0 / support
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
-@assert normalizationconstant(support, dimension) ≈ (1.0 / support) / 120.0
+@assert normalizationconstant(invh, dimension) ≈ (1.0 / support) / 120.0
 dimension = 2
-@assert normalizationconstant(support, dimension) ≈ (7.0 / 478.0) / π * (1.0 / support)^2
+@assert normalizationconstant(invh, dimension) ≈ (7.0 / 478.0) / π * (1.0 / support)^2
 dimension = 3
-@assert normalizationconstant(support, dimension) ≈ (3.0 / 359.0) π * (1.0 / support)^3
+@assert normalizationconstant(invh, dimension) ≈ (3.0 / 359.0) / π * (1.0 / support)^3
 
 # output
 
@@ -115,11 +116,11 @@ setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
-@assert w0(support, dimension) ≈ 66.0 * (1.0 / (3.0 / support)) / 120.0
+@assert w0(support, dimension) ≈ 66.0 * (3.0 / support) / 120.0
 dimension = 2
-@assert w0(support, dimension) ≈ 66.0 * (7.0 / 478.0) / π * (1.0 / (3.0 / support))^2
+@assert w0(support, dimension) ≈ 66.0 * (7.0 / 478.0) / π * (3.0 / support)^2
 dimension = 3
-@assert w0(support, dimension) ≈ 66.0 * (3.0 / 359.0) π * (1.0 / (3.0 / support))^3
+@assert w0(support, dimension) ≈ 66.0 * (3.0 / 359.0) / π * (3.0 / support)^3
 
 # output
 
@@ -150,17 +151,23 @@ Compute the kernel interaction
 
 ```jldoctest
 # setup
-rij = 3.0::support = 2.1
+rij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
-@assert w(rij, support, dimension) ≈ 4.2
+support = 8.1
+@assert w(rij, support, dimension) ≈ 0.12308673182572215
+dimension = 1
+support = 4.1
+@assert w(rij, support, dimension) ≈ 0.050604928977178415
 dimension = 2
-@assert w(rij, support, dimension) ≈ 42.0
+support = 2.1
+@assert w(rij, support, dimension) ≈ 5.660228850077883e-7
 dimension = 3
+support = 1.1
 @assert w(rij, support, dimension) ≈ 0.0
 
 # output
@@ -205,19 +212,24 @@ Compute the first derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 3.0
-support = 2.1
+rij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
-@assert dwdrij(rij, support, dimension) ≈ 4.2
-dimension = 2
-@assert dwdrij(rij, support, dimension) ≈ 42.0
-dimension = 3
+support = 1.1
 @assert dwdrij(rij, support, dimension) ≈ 0.0
+dimension = 1
+support = 8.1
+@assert dwdrij(rij, support, dimension) ≈ -0.06306498329433108
+dimension = 2
+support = 4.1
+@assert dwdrij(rij, support, dimension) ≈ -0.04635974146374518
+dimension = 3
+support = 2.1
+@assert dwdrij(rij, support, dimension) ≈ -2.3070798053015142e-5
 
 # output
 
@@ -266,19 +278,24 @@ Compute the second derivative of the kernel
 
 ```jldoctest
 # setup
-rij = 3.0
-support = 2.1
+rij = 2.0
 
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
-@assert d2wdrij2(rij, support, dimension) ≈ 4.2
-dimension = 2
-@assert d2wdrij2(rij, support, dimension) ≈ 42.0
-dimension = 3
+support = 2.1
+@assert d2wdrij2(rij, support, dimension) ≈ 0.0014166432920523402
+dimension = 1
+support = 1.1
 @assert d2wdrij2(rij, support, dimension) ≈ 0.0
+dimension = 2
+support = 8.1
+@assert d2wdrij2(rij, support, dimension) ≈ -0.00032958756972976803
+dimension = 3
+support = 4.1
+@assert d2wdrij2(rij, support, dimension) ≈ 0.03013882982464853
 
 # output
 

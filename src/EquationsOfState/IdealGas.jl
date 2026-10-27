@@ -49,4 +49,5 @@ sumweightedmassneighbors!(particleid, neighbors, dimension, r, radius, m, ρ)
 """
 function densitytopressure_IdealGas!(particleid, ρ, ρ0, c, refdensityfactor, exponent, p)
     p[particleid] = c^2 * ρ[particleid]
+    return nothing
 end

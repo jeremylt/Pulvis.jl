@@ -51,18 +51,19 @@ setkernelshape(Kernel.QuinticSpline)
 """
 function setkernelshape(shape::Kernel.Shape)
     if shape == Kernel.CubicSpline
-        smoothinglength = smoothinglength_CubicSpline
-        normalizationconstant = normalizationconstant_CubicSpline
-        w0 = w0_CubicSpline
-        w = w_CubicSpline
-        dwdrij = dwdrij_CubicSpline
-        d2wdrij2 = d2wdrij2_CubicSpline
+        global smoothinglength = smoothinglength_CubicSpline
+        global normalizationconstant = normalizationconstant_CubicSpline
+        global w0 = w0_CubicSpline
+        global w = w_CubicSpline
+        global dwdrij = dwdrij_CubicSpline
+        global d2wdrij2 = d2wdrij2_CubicSpline
     elseif shape == Kernel.QuinticSpline
-        smoothinglength = smoothinglength_QuinticSpline
-        normalizationconstant = normalizationconstant_QuinticSpline
-        w0 = w0_QuinticSpline
-        w = w_QuinticSpline
-        dwdrij = dwdrij_QuinticSpline
-        d2wdrij2 = d2wdrij2_QuinticSpline
+        global smoothinglength = smoothinglength_QuinticSpline
+        global normalizationconstant = normalizationconstant_QuinticSpline
+        global w0 = w0_QuinticSpline
+        global w = w_QuinticSpline
+        global dwdrij = dwdrij_QuinticSpline
+        global d2wdrij2 = d2wdrij2_QuinticSpline
     end
+    return nothing
 end

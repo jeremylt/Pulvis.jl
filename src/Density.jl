@@ -2,6 +2,8 @@
 # Density computation at a single point
 # ------------------------------------------------------------------------------
 
+using LinearAlgebra
+
 """
 ```julia
 sumweightedmassself!(particleid, radius, m, ρ)
@@ -12,6 +14,7 @@ Compute the density of the particle from the shape function, radius, and mass
 # Arguments:
 
   - `particleid::Int`: index number of current particle
+  - `dimension::Int`:  spatial dimension of problem
   - `radius::Array`:   input array of particle radi
   - `m::Array`:        input array of particle masses
   - `ρ::Array`:        output array of particle densities
@@ -25,22 +28,30 @@ Compute the density of the particle from the shape function, radius, and mass
 ```jldoctest
 # setup
 particleid = 1
+dimension = 2
 radius = [1.0]
 m = [42.0]
 ρ = [0.0]
 
 # compute density
-sumweightedmassself!(particleid, radius, m, ρ)
+sumweightedmassself!(particleid, dimension, radius, m, ρ)
 
 # verify
-@assert ρ[particleid] ≈ 42.0
+@assert ρ[particleid] ≈ 116.29365122090275
 
 # output
 
 ```
 """
-function sumweightedmassself!(particleid::Int, radius::Array, m::Array, ρ::Array)
-    ρ[particleid] = w0(radius[particleid]) * m[particleid]
+function sumweightedmassself!(
+    particleid::Int,
+    dimension::Int,
+    radius::Array,
+    m::Array,
+    ρ::Array,
+)
+    ρ[particleid] = w0(radius[particleid], dimension) * m[particleid]
+    return nothing
 end
 
 """
@@ -80,9 +91,9 @@ m = [42.0, 13.0, 14.0]
 sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
 
 # verify
-@assert ρ[particleid] ≈ 42.0
-@assert ρ[neighborids[3]] = 0.0
-@assert ρ[neighborids[4]] = 0.0
+@assert ρ[particleid] ≈ 210.73260272804137
+@assert ρ[neighborids[3]] ≈ 0.0
+@assert ρ[neighborids[4]] ≈ 0.0
 
 # output
 
@@ -100,10 +111,11 @@ function sumweightedmassneighbors!(
     for i = neighborids[particleid]:(neighborids[particleid+1]-1)
         neighborid = neighborids[i]
         absdistance = norm(
-            view(r, (particleid*dimension):((particleid+1)*dimension-1)) -
-            view(r, (neighborid*dimension):((neighborid+1)*dimension-1)),
+            view(r, ((particleid-1)*dimension+1):(particleid*dimension)) -
+            view(r, ((neighborid-1)*dimension+1):(neighborid*dimension)),
         )
 
-        ρ[particleid] += w(absdistance, radius[particleid]) * m[particleid]
+        ρ[particleid] += w(absdistance, radius[particleid], dimension) * m[particleid]
     end
+    return nothing
 end

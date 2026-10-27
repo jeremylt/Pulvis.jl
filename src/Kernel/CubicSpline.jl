@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# cubic spline kernel functions
+# Kernel functions - cubic spline
 # ------------------------------------------------------------------------------
 
 πinv = 1.0 / π
@@ -13,7 +13,7 @@ Compute the smoothing length of the kernel
 
 # Arguments:
 
-  - `support::Array`: support raidus
+  - `support::Array`: support radius
 
 # Returns:
 
@@ -26,7 +26,7 @@ Compute the smoothing length of the kernel
 support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 @assert smoothinglength(support) ≈ support / 2.0
@@ -35,7 +35,7 @@ setkernelshape(Kernel.cubicspline)
 
 ```
 """
-function smoothinglength_cubicspline(support)
+function smoothinglength_CubicSpline(support)
     # support / 2.0
     return 0.5 * support
 end
@@ -63,7 +63,7 @@ Compute the normalization constant of the kernel
 support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
@@ -77,7 +77,7 @@ dimension = 3
 
 ```
 """
-function normalizationconstant_cubicspline(invh, dimension::Int)
+function normalizationconstant_CubicSpline(invh, dimension::Int)
     if dimension == 1
         # (2.0 / 3.0) * invh
         return 0.6666666666666666 * invh
@@ -113,7 +113,7 @@ Compute the kernel self interaction
 support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
@@ -127,8 +127,8 @@ dimension = 3
 
 ```
 """
-function w0_cubicspline(support, dimension::Int)
-    return normalizationconstant_cubicspline(2.0 / support, dimension)
+function w0_CubicSpline(support, dimension::Int)
+    return normalizationconstant_CubicSpline(2.0 / support, dimension)
 end
 
 """
@@ -155,7 +155,7 @@ Compute the kernel interaction
 rij = 3.0::support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
@@ -169,15 +169,15 @@ dimension = 3
 
 ```
 """
-function w_cubicspline(rij, support, dimension::Int)
+function w_CubicSpline(rij, support, dimension::Int)
     invh = 2.0 / support
     q = rij * invh
 
     if q < 1.0
         return (1.0 - 1.5 * q ^ 2 + 0.75 * q ^ 3) *
-               normalizationconstant_cubicspline(invh, dimension)
+               normalizationconstant_CubicSpline(invh, dimension)
     elseif q < 2.0
-        return (0.25 * (2.0 - q) ^ 3) * normalizationconstant_cubicspline(invh, dimension)
+        return (0.25 * (2.0 - q) ^ 3) * normalizationconstant_CubicSpline(invh, dimension)
     else
         return 0.0
     end
@@ -208,7 +208,7 @@ rij = 3.0
 support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
@@ -222,18 +222,18 @@ dimension = 3
 
 ```
 """
-function dwdrij_cubicspline(rij, support, dimension::Int)
+function dwdrij_CubicSpline(rij, support, dimension::Int)
     invh = 2.0 / support
     q = rij * invh
 
     if q < 1.0
         return (-3.0 * q + 2.25 * q ^ 2) *
                invh *
-               normalizationconstant_cubicspline(invh, dimension)
+               normalizationconstant_CubicSpline(invh, dimension)
     elseif q < 2.0
         return (-0.75 * (2.0 - q) ^ 2) *
                invh *
-               normalizationconstant_cubicspline(invh, dimension)
+               normalizationconstant_CubicSpline(invh, dimension)
     else
         return 0.0
     end
@@ -264,7 +264,7 @@ rij = 3.0
 support = 2.1
 
 # set cubic kernel
-setkernelshape(Kernel.cubicspline)
+setkernelshape(Kernel.CubicSpline)
 
 # verify
 dimension = 1
@@ -278,19 +278,19 @@ dimension = 3
 
 ```
 """
-function d2wdrij2_cubicspline(rij, support, dimension)
+function d2wdrij2_CubicSpline(rij, support, dimension)
     invh = 2.0 / support
     q = rij * invh
 
     if q < 1.0
         return (-3.0 + 4.5 * q) *
                (invh ^ 2) *
-               normalizationconstant_cubicspline(invh, dimension)
+               normalizationconstant_CubicSpline(invh, dimension)
     elseif q < 2.0
         return 1.5 *
                (2.0 - q) *
                (invh ^ 2) *
-               normalizationconstant_cubicspline(invh, dimension)
+               normalizationconstant_CubicSpline(invh, dimension)
     else
         return 0.0
     end

@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# enumerated types
+# Enumerated types
 # ------------------------------------------------------------------------------
 
 module Kernel
@@ -9,8 +9,8 @@ Kernel shape functions
 
 # Shape:
 
-  - `cubicspline`:   cubic spline shape function
-  - `quinticspline`: quintic spline shape function
+  - `CubicSpline`:   cubic spline shape function
+  - `QuinticSpline`: quintic spline shape function
 
 # Example:
 
@@ -19,11 +19,11 @@ Kernel.Shape
 
 # output
 Enum Pulvis.Kernel.Shape:
-cubicspline = 0
-quinticspline = 1
+CubicSpline = 0
+QuinticSpline = 1
 ```
 """
-@enum Shape cubicspline quinticspline
+@enum Shape CubicSpline QuinticSpline
 
 end # submodule
 
@@ -35,8 +35,8 @@ Equations of state
 
 # Type:
 
-  - `gentait`:  general tait
-  - `idealgas`: ideal gas law
+  - `GenTait`:  general tait
+  - `IdealGas`: ideal gas law
 
 # Example:
 
@@ -45,10 +45,10 @@ EquationOfState.Type
 
 # output
 Enum Pulvis.EquationOfState.Type:
-gentait = 0
-idealgas = 1
+GenTait = 0
+IdealGas = 1
 ```
 """
-@enum Type gentait idealgas
+@enum Type GenTait IdealGas
 
 end # submodule

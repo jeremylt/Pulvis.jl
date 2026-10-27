@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# common kernel functions
+# Kernel functions - common
 # ------------------------------------------------------------------------------
 
 """
@@ -12,7 +12,7 @@ Compute the gradient of the kernel
 # Arguments:
 
   - `rij::Float`:       distance between particles
-  - `support::Float`:   support raidus
+  - `support::Float`:   support radius
   - `dimension::Float`: spatial dimension
   - `eij::Array`:       input array of normalized distance between particles
   - `gradWij::Array`:   output array of kernel gradient

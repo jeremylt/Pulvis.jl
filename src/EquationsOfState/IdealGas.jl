@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# equations of state, ideal gas law
+# Equations of state - ideal gas law
 # ------------------------------------------------------------------------------
 
 """
@@ -65,7 +65,7 @@ sumweightedmassneighbors!(
 
 ```
 """
-function densitytopressure_idealgas!(
+function densitytopressure_IdealGas!(
     particle,
     density,
     initialdensity,

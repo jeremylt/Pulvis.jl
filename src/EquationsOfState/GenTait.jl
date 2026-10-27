@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# equations of state, gen tait
+# Equations of state - gen tait
 # ------------------------------------------------------------------------------
 
 """
@@ -65,7 +65,7 @@ sumweightedmassneighbors!(
 
 ```
 """
-function densitytopressure_gentait!(
+function densitytopressure_GenTait!(
     particle,
     density,
     initialdensity,

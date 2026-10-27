@@ -1,4 +1,4 @@
-name = "julia_sph"
+name = "Pulvis"
 uuid = "cbc3886f-6f98-48da-b488-8cb08f47fbb8"
 authors = ["Jeremy L Thompson <jeremy@jeremylt.org>"]
 version = "0.1.0"

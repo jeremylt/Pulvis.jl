@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# quintic spline kernel functions
+# Kernel functions - quintic spline
 # ------------------------------------------------------------------------------
 
 """
@@ -11,7 +11,7 @@ Compute the smoothing length of the kernel
 
 # Arguments:
 
-  - `support::Array`: support raidus
+  - `support::Array`: support radius
 
 # Returns:
 
@@ -24,7 +24,7 @@ Compute the smoothing length of the kernel
 support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 @assert smoothinglength(support) ≈ support / 2.0
@@ -33,7 +33,7 @@ setkernelshape(Kernel.quinticspline)
 
 ```
 """
-function smoothinglength_quinticspline(support)
+function smoothinglength_QuinticSpline(support)
     # support / 3.0
     return 0.3333333333333333 * support
 end
@@ -61,7 +61,7 @@ Compute the normalization constant of the kernel
 support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
@@ -75,7 +75,7 @@ dimension = 3
 
 ```
 """
-function normalizationconstant_quinticspline(invh, dimension)
+function normalizationconstant_QuinticSpline(invh, dimension)
     if dimension == 1
         # invh / 120.0
         return 0.0083333333333333 * invh
@@ -111,7 +111,7 @@ Compute the kernel self interaction
 support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
@@ -125,8 +125,8 @@ dimension = 3
 
 ```
 """
-function w0_quinticspline(support, dimension)
-    return 66.0 * normalizationconstant_quinticspline(3.0 / support, dimension)
+function w0_QuinticSpline(support, dimension)
+    return 66.0 * normalizationconstant_QuinticSpline(3.0 / support, dimension)
 end
 
 """
@@ -153,7 +153,7 @@ Compute the kernel interaction
 rij = 3.0::support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
@@ -167,18 +167,18 @@ dimension = 3
 
 ```
 """
-function w_quinticspline(rij, support, dimension)
+function w_QuinticSpline(rij, support, dimension)
     invh = 3.0 / support
     q = rij * invh
 
     if q < 1.0
         return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5) *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 2.0
         return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5) *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 3.0
-        return (3.0 - q)^5 * normalizationconstant_quinticspline(invh, dimension)
+        return (3.0 - q)^5 * normalizationconstant_QuinticSpline(invh, dimension)
     else
         return 0.0
     end
@@ -209,7 +209,7 @@ rij = 3.0
 support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
@@ -223,23 +223,23 @@ dimension = 3
 
 ```
 """
-function dwdrij_quinticspline(rij, support, dimension)
+function dwdrij_QuinticSpline(rij, support, dimension)
     invh = 3.0 / support
     q = rij * invh
 
     if q < 1.0
         return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) *
                invh *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 2.0
         return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) *
                invh *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 3.0
         return -5.0 *
                (3.0 - q)^4 *
                invh *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     else
         return 0.0
     end
@@ -270,7 +270,7 @@ rij = 3.0
 support = 2.1
 
 # set quintic kernel
-setkernelshape(Kernel.quinticspline)
+setkernelshape(Kernel.QuinticSpline)
 
 # verify
 dimension = 1
@@ -284,23 +284,23 @@ dimension = 3
 
 ```
 """
-function d2wdrij2_quinticspline(rij, support, dimension)
+function d2wdrij2_QuinticSpline(rij, support, dimension)
     invh = 3.0 / support
     q = rij * invh
 
     if q < 1.0
         return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) *
                (invh ^ 2) *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 2.0
         return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) *
                (invh ^ 2) *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     elseif q < 3.0
         return 20.0 *
                (3.0 - q)^3 *
                (invh ^ 2) *
-               normalizationconstant_quinticspline(invh, dimension)
+               normalizationconstant_QuinticSpline(invh, dimension)
     else
         return 0.0
     end

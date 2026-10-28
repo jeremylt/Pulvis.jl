@@ -20,14 +20,15 @@ Compute the smoothing length of the kernel
 # Example:
 
 ```jldoctest
-# setup
-support = 2.1
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+
 # verify
-@assert smoothinglength(support) ≈ support / 3.0
+@assert smoothinglength(support) ≈ h
 
 # output
 
@@ -40,14 +41,14 @@ end
 
 """
 ```julia
-normalizationconstant(invh, dimension)
+normalizationconstant(h_inv, dimension)
 ```
 
 Compute the normalization constant of the kernel
 
 # Arguments:
 
-  - `invh::Float`:    inverse of the support radius
+  - `h_inv::Float`:   inverse of the support radius
   - `dimension::Int`: spatial dimension
 
 # Returns:
@@ -57,35 +58,41 @@ Compute the normalization constant of the kernel
 # Example:
 
 ```jldoctest
-# setup
-support = 2.1
-invh = 1.0 / support
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+h_inv = 1.0 / h
+
+# normalization constants
+normalization_1d = 1.0 / (120.0 * h)
+normalization_2d = 7.0 * (1.0 / π) / (478.0 * h^2)
+normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
+
 # verify
 dimension = 1
-@assert normalizationconstant(invh, dimension) ≈ (1.0 / support) / 120.0
+@assert normalizationconstant(h_inv, dimension) ≈ normalization_1d
 dimension = 2
-@assert normalizationconstant(invh, dimension) ≈ (7.0 / 478.0) / π * (1.0 / support)^2
+@assert normalizationconstant(h_inv, dimension) ≈ normalization_2d
 dimension = 3
-@assert normalizationconstant(invh, dimension) ≈ (3.0 / 359.0) / π * (1.0 / support)^3
+@assert normalizationconstant(h_inv, dimension) ≈ normalization_3d
 
 # output
 
 ```
 """
-function normalizationconstant_QuinticSpline(invh, dimension)
+function normalizationconstant_QuinticSpline(h_inv, dimension)
     if dimension == 1
-        # invh / 120.0
-        return 0.0083333333333333 * invh
+        # h_inv / 120.0
+        return 0.0083333333333333 * h_inv
     elseif dimension == 2
-        # (7.0 / 478.0) / π * invh^2
-        return 0.0046614418478797 * invh ^ 2
+        # (7.0 / 478.0) / π * h_inv^2
+        return 0.0046614418478797 * h_inv ^ 2
     elseif dimension == 3
-        # (3.0 / 359.0) / π * invh^3
-        return 0.0026599711937364 * invh ^ 3
+        # (3.0 / 359.0) / π * h_inv^3
+        return 0.0026599711937364 * h_inv ^ 3
     end
 end
 
@@ -108,19 +115,26 @@ Compute the kernel self interaction
 # Example:
 
 ```jldoctest
-# setup
-support = 2.1
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+
+# normalization constants
+normalization_1d = 1.0 / (120.0 * h)
+normalization_2d = 7.0 * (1.0 / π) / (478.0 * h^2)
+normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
+
 # verify
+w_unnormalized = 66.0
 dimension = 1
-@assert w0(support, dimension) ≈ 66.0 * (3.0 / support) / 120.0
+@assert w0(support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w0(support, dimension) ≈ 66.0 * (7.0 / 478.0) / π * (3.0 / support)^2
+@assert w0(support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w0(support, dimension) ≈ 66.0 * (3.0 / 359.0) / π * (3.0 / support)^3
+@assert w0(support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
@@ -150,42 +164,85 @@ Compute the kernel interaction
 # Example:
 
 ```jldoctest
-# setup
-r_ij = 2.0
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+
+# normalization constants
+normalization_1d = 1.0 / (120.0 * h)
+normalization_2d = 7.0 * (1.0 / π) / (478.0 * h^2)
+normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
+
 # verify
+r_ij = 0.0
+q = r_ij / h
+w_unnormalized = 66.0
 dimension = 1
-support = 8.1
-@assert w(r_ij, support, dimension) ≈ 0.12308673182572215
-dimension = 1
-support = 4.1
-@assert w(r_ij, support, dimension) ≈ 0.050604928977178415
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-support = 2.1
-@assert w(r_ij, support, dimension) ≈ 5.660228850077883e-7
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-support = 1.1
-@assert w(r_ij, support, dimension) ≈ 0.0
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.2
+q = r_ij / h
+w_unnormalized = (3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5
+dimension = 1
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.5
+q = r_ij / h
+w_unnormalized = (3.0 - q)^5 - 6.0 * (2.0 - q)^5
+dimension = 1
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.8
+q = r_ij / h
+w_unnormalized = (3.0 - q)^5
+dimension = 1
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.9
+q = r_ij / h
+w_unnormalized = 0.0
+dimension = 1
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
 ```
 """
 function w_QuinticSpline(r_ij, support, dimension)
-    invh = 3.0 / support
-    q = r_ij * invh
+    h_inv = 3.0 / support
+    q = r_ij * h_inv
 
     if q < 1.0
         return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5) *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 2.0
         return ((3.0 - q)^5 - 6.0 * (2.0 - q)^5) *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 3.0
-        return (3.0 - q)^5 * normalizationconstant_QuinticSpline(invh, dimension)
+        return (3.0 - q)^5 * normalizationconstant_QuinticSpline(h_inv, dimension)
     else
         return 0.0
     end
@@ -211,47 +268,90 @@ Compute the first derivative of the kernel
 # Example:
 
 ```jldoctest
-# setup
-r_ij = 2.0
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+
+# normalization constants
+normalization_1d = 1.0 / (120.0 * h)
+normalization_2d = 7.0 * (1.0 / π) / (478.0 * h^2)
+normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
+
 # verify
+r_ij = 0.0
+q = r_ij / h
+w_unnormalized = 0.0
 dimension = 1
-support = 1.1
-@assert dwdrij(r_ij, support, dimension) ≈ 0.0
-dimension = 1
-support = 8.1
-@assert dwdrij(r_ij, support, dimension) ≈ -0.06306498329433108
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-support = 4.1
-@assert dwdrij(r_ij, support, dimension) ≈ -0.04635974146374518
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-support = 2.1
-@assert dwdrij(r_ij, support, dimension) ≈ -2.3070798053015142e-5
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.2
+q = r_ij / h
+w_unnormalized = (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) * (1.0 / h)
+dimension = 1
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.5
+q = r_ij / h
+w_unnormalized = (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) * (1.0 / h)
+dimension = 1
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.8
+q = r_ij / h
+w_unnormalized = -5.0 * (3.0 - q)^4 * (1.0 / h)
+dimension = 1
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.9
+q = r_ij / h
+w_unnormalized = 0.0
+dimension = 1
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
 ```
 """
 function dwdrij_QuinticSpline(r_ij, support, dimension)
-    invh = 3.0 / support
-    q = r_ij * invh
+    h_inv = 3.0 / support
+    q = r_ij * h_inv
 
     if q < 1.0
         return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) *
-               invh *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               h_inv *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 2.0
         return (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) *
-               invh *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               h_inv *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 3.0
         return -5.0 *
                (3.0 - q)^4 *
-               invh *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               h_inv *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     else
         return 0.0
     end
@@ -277,47 +377,91 @@ Compute the second derivative of the kernel
 # Example:
 
 ```jldoctest
-# setup
-r_ij = 2.0
-
 # set quintic kernel
 setkernelshape(Kernel.QuinticSpline)
 
+# setup
+support = 0.9
+h = support / 3.0
+
+# normalization constants
+normalization_1d = 1.0 / (120.0 * h)
+normalization_2d = 7.0 * (1.0 / π) / (478.0 * h^2)
+normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
+
 # verify
+r_ij = 0.0
+q = r_ij / h
+w_unnormalized = -4000.0 / 3.0
 dimension = 1
-support = 2.1
-@assert d2wdrij2(r_ij, support, dimension) ≈ 0.0014166432920523402
-dimension = 1
-support = 1.1
-@assert d2wdrij2(r_ij, support, dimension) ≈ 0.0
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-support = 8.1
-@assert d2wdrij2(r_ij, support, dimension) ≈ -0.00032958756972976803
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-support = 4.1
-@assert d2wdrij2(r_ij, support, dimension) ≈ 0.03013882982464853
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.2
+q = r_ij / h
+w_unnormalized =
+    (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) * (1.0 / h^2)
+dimension = 1
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.5
+q = r_ij / h
+w_unnormalized = (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) * (1.0 / h^2)
+dimension = 1
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.8
+q = r_ij / h
+w_unnormalized = 20.0 * (3.0 - q)^3 * (1.0 / h^2)
+dimension = 1
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+
+r_ij = 0.9
+q = r_ij / h
+w_unnormalized = 0.0
+dimension = 1
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+dimension = 2
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+dimension = 3
+@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
 ```
 """
 function d2wdrij2_QuinticSpline(r_ij, support, dimension)
-    invh = 3.0 / support
-    q = r_ij * invh
+    h_inv = 3.0 / support
+    q = r_ij * h_inv
 
     if q < 1.0
         return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) *
-               (invh ^ 2) *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               (h_inv ^ 2) *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 2.0
         return (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) *
-               (invh ^ 2) *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               (h_inv ^ 2) *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     elseif q < 3.0
         return 20.0 *
                (3.0 - q)^3 *
-               (invh ^ 2) *
-               normalizationconstant_QuinticSpline(invh, dimension)
+               (h_inv ^ 2) *
+               normalizationconstant_QuinticSpline(h_inv, dimension)
     else
         return 0.0
     end

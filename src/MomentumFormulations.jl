@@ -4,7 +4,7 @@
 
 # source files
 include("MomentumFormulations/Adami.jl")
-include("MomentumFormulations/Monaghan.jl")
+include("MomentumFormulations/Monagahn.jl")
 
 """
 ```julia
@@ -31,10 +31,10 @@ setmomentumformulation(MomentumFormulation.Adami)
 @assert specificcoefficient == specificcoefficient_Adami;
 
 # set shape function
-setkernelshape(MomentumFormulation.Monaghan)
+setkernelshape(MomentumFormulation.Monagahn)
 
 # verify
-@assert specificcoefficient = specificcoefficient_Monaghan;
+@assert specificcoefficient = specificcoefficient_Monagahn;
 
 # output
 
@@ -43,15 +43,21 @@ setkernelshape(MomentumFormulation.Monaghan)
 function setmomentumformulation(formulationtype::MomentumFormulation.Type)
     if formulationtype == MomentumFormulation.Adami
         global specificcoefficient = specificcoefficient_Adami
-        global pressuregradient = pressuregradient_Adami
-        global shearforces = shearforces_Adami
-    elseif formulationtype == MomentumFormulation.Monaghan
-        global specificcoefficient = specificcoefficient_Monaghan
-        global pressuregradient = pressuregradient_Monaghan
-        global shearforces = shearforces_Monaghan
+        global pressuregradient! = pressuregradient_Adami!
+        global shearforces! = shearforces_Adami!
+        global standardbackgroundpressure! = standardbackgroundpressure_Adami!
+        global generalizedbackgroundpressure! = generalizedbackgroundpressure_Adami!
+        global modifiedvelocitycontribution! = modifiedvelocitycontribution_Adami!
+    elseif formulationtype == MomentumFormulation.Monagahn
+        global specificcoefficient = specificcoefficient_Monagahn
+        global pressuregradient! = pressuregradient_Monagahn!
+        global shearforces! = shearforces_Monagahn!
+        global standardbackgroundpressure! = standardbackgroundpressure_Monagahn!
+        global generalizedbackgroundpressure! = generalizedbackgroundpressure_Monagahn!
+        global modifiedvelocitycontribution! = modifiedvelocitycontribution_Monagahn!
     end
     return nothing
 end
 
-# default kernel - Monaghan
-setmomentumformulation(MomentumFormulation.Monaghan)
+# default kernel - Monagahn
+setmomentumformulation(MomentumFormulation.Monagahn)

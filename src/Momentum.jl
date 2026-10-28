@@ -138,7 +138,9 @@ function momentumequationneighbors!(
             view(a, ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
-        # transport velocity
+        # transport velocity - TODO
+
+        # artificial viscosity - TODO
     end
     return nothing
 end

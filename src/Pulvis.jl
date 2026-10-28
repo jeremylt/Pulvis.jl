@@ -5,7 +5,7 @@
 module Pulvis
 
 # Dependencies
-using LinearAlgebra
+using LinearAlgebra: norm, dot
 
 # Utilities
 include("Enums.jl")

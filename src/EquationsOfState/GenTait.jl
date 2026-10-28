@@ -131,6 +131,7 @@ setequationsofstate(EquationOfState.GenTait)
 # setup
 c = 3.5
 refdensityfactor = 0.9
+ρ = 0.75
 m = 1.3
 ρ0 = 0.4
 

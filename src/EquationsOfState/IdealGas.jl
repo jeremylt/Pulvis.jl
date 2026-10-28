@@ -111,6 +111,7 @@ setequationsofstate(EquationOfState.IdealGas)
 
 # setup
 c = 3.5
+ρ = 0.75
 m = 1.3
 ρ0 = 0.4
 

@@ -61,8 +61,8 @@ Momentum formulations
 
 # Type:
 
-  - `Adami`:    Adami
   - `Monagahn`: Monagahn
+  - `Adami`:    Adami
 
 # Example:
 
@@ -71,10 +71,10 @@ MomentumFormulation.Type
 
 # output
 Enum Pulvis.MomentumFormulation.Type:
-Adami = 0
-Monagahn = 1
+Monagahn = 0
+Adami = 1
 ```
 """
-@enum Type Adami Monagahn
+@enum Type Monagahn Adami
 
 end # submodule

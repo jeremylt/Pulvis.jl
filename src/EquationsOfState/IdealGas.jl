@@ -4,50 +4,123 @@
 
 """
 ```julia
-densitytopressure!(particleid, ρ, ρ0, c, refdensityfactor, exponent, p)
+densitytopressure_IdealGas(ρ, ρ0, c, refdensityfactor, exponent)
 ```
 
 Convert density to pressure
 
 # Arguments:
 
-  - `particleid::Int`:         index number of current particle
-  - `ρ::Array`:                input array of particle densities
+  - `ρ::Float`:                particle density
   - `ρ0::Float`:               initial density
   - `c::Float`:                speed of sound
   - `refdensityfactor::Float`: reference density factor
   - `exponent::Int`:           exponent
-  - `p::Array`:                output array of particle pressures
 
 # Returns:
 
-  - none
+  - particle pressure
 
 # Example:
 
 ```jldoctest
-# setup
-particlei = 1
-neighbors = [2, 3]
-dimension = 2
-r = [1.0, 1.0, 1.1, 1.2, 1.3, 1.4]
-radius = [1.0, 1.1, 1, 2]
-m = [42.0, 13.0, 14.0]
-ρ = [1.0, 0.0, 0.0]
+# set equation of state
+setequationsofstate(EquationOfState.IdealGas)
 
-# compute density
-sumweightedmassneighbors!(particleid, neighbors, dimension, r, radius, m, ρ)
+# setup
+c = 3.5
+ρ = 0.75
 
 # verify
-@assert ρ[particleid] ≈ 42.0
-@assert ρ[neighbors[1]] = 0.0
-@assert ρ[neighbors[2]] = 0.0
+@assert densitytopressure(ρ, 0.0, c, 0.0, 0) ≈ 9.1875
 
 # output
 
 ```
 """
-function densitytopressure_IdealGas!(particleid, ρ, ρ0, c, refdensityfactor, exponent, p)
-    p[particleid] = c^2 * ρ[particleid]
-    return nothing
+function densitytopressure_IdealGas(ρ, ρ0, c, refdensityfactor, exponent::Int)
+    return c^2 * ρ
+end
+
+"""
+```julia
+pressuretodensity_IdealGas(p, ρ0, c, refdensityfactor, exponent)
+```
+
+Convert pressure to density
+
+# Arguments:
+
+  - `p::Float`:                particle pressure
+  - `ρ0::Float`:               initial density
+  - `c::Float`:                speed of sound
+  - `refdensityfactor::Float`: reference density factor
+  - `exponent::Int`:           exponent
+
+# Returns:
+
+  - particle density
+
+# Example:
+
+```jldoctest
+# set equation of state
+setequationsofstate(EquationOfState.IdealGas)
+
+# setup
+c = 3.5
+p = 1.8
+ρ0 = 0.4
+
+# verify
+@assert pressuretodensity(p, ρ0, c, 0.0, 0) ≈ 0.146938775
+
+# output
+
+```
+"""
+function pressuretodensity_IdealGas(p, ρ0, c, refdensityfactor, exponent::Int)
+    return p / c^2
+end
+
+"""
+```julia
+densitytoenergy_IdealGas(ρ, m, ρ0, c, refdensityfactor, exponent)
+```
+
+Convert density to energy
+
+# Arguments:
+
+  - `ρ::Float`:                particle density
+  - `m::Float`:                particle mass
+  - `ρ0::Float`:               initial density
+  - `c::Float`:                speed of sound
+  - `refdensityfactor::Float`: reference density factor
+  - `exponent::Int`:           exponent
+
+# Returns:
+
+  - particle energy
+
+# Example:
+
+```jldoctest
+# set equation of state
+setequationsofstate(EquationOfState.IdealGas)
+
+# setup
+c = 3.5
+m = 1.3
+ρ0 = 0.4
+
+# verify
+@assert densitytoenergy(ρ, m, ρ0, c, 0.0, 0) ≈ -0.2752956873e2
+
+# output
+
+```
+"""
+function densitytoenergy_IdealGas(ρ, m, ρ0, c, refdensityfactor, exponent::Int)
+    return -c^2 * m * log(m^2 / (ρ0 * ρ))
 end

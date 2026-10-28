@@ -119,14 +119,12 @@ function computepressure_particle!(
     if particleid <= length(p)
         typeid = typeids[particleid]
 
-        densitytopressure!(
-            particleid,
-            ρ,
+        p[particleid] = densitytopressure!(
+            ρ[particleid],
             ρ0[typeid],
             c,
             refdensityfactor[typeid],
             exponent[typeid],
-            p,
         )
     end
     return nothing

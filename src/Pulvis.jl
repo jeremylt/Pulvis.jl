@@ -13,8 +13,8 @@ include("Kernels.jl")
 include("Utilities.jl")
 
 # Physics
-include("Density.jl")
 include("EquationsOfState.jl")
+include("Density.jl")
 include("MomentumFormulations.jl")
 include("Momentum.jl")
 

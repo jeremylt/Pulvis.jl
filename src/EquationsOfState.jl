@@ -28,13 +28,13 @@ Set the equations of state
 setequationsofstate(EquationOfState.GenTait)
 
 # verify
-@assert densitytopressure == densitytopressure_GenTait
+@assert densitytopressure! == densitytopressure_GenTait!
 
 # set equations of state
 setequationsofstate(EquationOfState.IdealGas)
 
 # verify
-@assert densitytopressure == densitytopressure_IdealGas
+@assert densitytopressure! == densitytopressure_IdealGas!
 
 # output
 
@@ -42,9 +42,9 @@ setequationsofstate(EquationOfState.IdealGas)
 """
 function setequationsofstate(equationstype::EquationOfState.Type)
     if equationstype == EquationOfState.GenTait
-        global densitytopressure = densitytopressure_GenTait
+        global densitytopressure! = densitytopressure_GenTait!
     elseif equationstype == EquationOfState.IdealGas
-        global densitytopressure = densitytopressure_IdealGas
+        global densitytopressure! = densitytopressure_IdealGas!
     end
     return nothing
 end

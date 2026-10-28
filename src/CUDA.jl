@@ -221,7 +221,7 @@ Compute the forces for a single particle on a single GPU thread
 
   - none
 """
-function computeforces_cuda!(
+function computeforces_particle!(
     neighborids::Array,
     typeids::Array,
     μ_dynamic::Array,

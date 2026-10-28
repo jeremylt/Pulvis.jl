@@ -117,20 +117,20 @@ Compute the forces for all particles on the CPU
 
 # Arguments:
 
-  - `neighborids::Array`:  input array of neighbor particle indices
-  - `typeids::Array`:      input array of particle type ids
-  - `μ_dynamic::Array`:    input array of dynamic viscosity for each particle type
-  - `μ_bulk::Array`:       input array of bulk viscosity for each particle type
-  - `dimension::Int`:      spatial dimension of problem
-  - `r::Array`:            input array of particle positions
-  - `radius::Array`:       input array of particle radi
-  - `m::Array`:            input array of particle masses
-  - `ρ::Array`:            input array of particle densities
-  - `p::Array`:            input array of particle pressures
-  - `v::Array`:            input array of particle velocities
-  - `a::Array`:            input array of particle acceleration
-  - `v_modified::Array`:   output array of modified particle velocities
-  - `a_modified::Array`:   output array of modified particle acceleration
+  - `neighborids::Array`: input array of neighbor particle indices
+  - `typeids::Array`:     input array of particle type ids
+  - `μ_dynamic::Array`:   input array of dynamic viscosity for each particle type
+  - `μ_bulk::Array`:      input array of bulk viscosity for each particle type
+  - `dimension::Int`:     spatial dimension of problem
+  - `r::Array`:           input array of particle positions
+  - `radius::Array`:      input array of particle radi
+  - `m::Array`:           input array of particle masses
+  - `ρ::Array`:           input array of particle densities
+  - `p::Array`:           input array of particle pressures
+  - `v::Array`:           input array of particle velocities
+  - `a::Array`:           input array of particle acceleration
+  - `v_modified::Array`:  output array of modified particle velocities
+  - `a_modified::Array`:  output array of modified particle acceleration
 
 # Returns:
 

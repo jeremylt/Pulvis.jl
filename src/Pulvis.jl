@@ -18,8 +18,7 @@ include("Density.jl")
 include("MomentumFormulations.jl")
 include("Momentum.jl")
 
-# Hardware specific implementations
-include("CPU.jl")
-include("CUDA.jl") # ToDo allow optional usage of CUDA
+# Drivers
+include("Drivers.jl")
 
 end # module Pulvis

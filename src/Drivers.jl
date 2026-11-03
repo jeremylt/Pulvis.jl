@@ -42,6 +42,7 @@ setdevicecomputation(false)
 """
 function setdevicecomputation(flag::Bool)
     if flag
+        @assert CUDA.functional(true)
         global computedensity! = computedensity_cuda!
         global computepressure! = computepressure_cuda!
         global computeforces! = computeforces_cuda!

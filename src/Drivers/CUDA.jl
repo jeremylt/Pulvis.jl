@@ -1,76 +1,97 @@
-using CUDA
-
 # ------------------------------------------------------------------------------
 # Density
 # ------------------------------------------------------------------------------
 
 """
 ```julia
-computedensity_particle!(neighborids, dimension, r, radius, m, ρ)
+computedensity_particle!(particleids, typeids, neighborindexes, dimension, p, r, m, ρ)
 ```
 
 Compute the density of a single particle on a single GPU thread
 
 # Arguments:
 
-  - `neighborids::Array`: input array of neighbor particle indices
-  - `dimension::Int`:     spatial dimension of problem
-  - `r::Array`:           input array of particle positions
-  - `radius::Array`:      input array of particle radi
-  - `m::Array`:           input array of particle masses
-  - `ρ::Array`:           output array of particle densities
+  - `particleids::Array`:     input array of particle ids by type
+  - `typeids::Array`:         input array of particle type ids
+  - `neighborindexes::Array`: input array of neighbor particle global indexes
+  - `dimension::Int`:         spatial dimension of problem
+  - `r::StateData`:           input arrays of particle positions by particle type and id
+  - `radius::StateData`:      input arrays of particle radi by particle type and id
+  - `m::StateData`:           input arrays of particle masses by particle type and id
+  - `ρ::StateData`:           output arrays of particle densities by particle type and id
 
 # Returns:
 
   - none
 """
 function computedensity_particle!(
-    neighborids::Array,
+    particleids::Array,
+    typeids::Array,
+    neighboridexes::Array,
     dimension::Int,
-    r::Array,
-    radius::Array,
-    m::Array,
-    ρ::Array,
+    r::StateData,
+    radius::StateData,
+    m::StateData,
+    ρ::StateData,
 )
-    particleid = threadIdx().x
+    i = threadIdx().x
 
-    if particleid <= length(ρ)
-        sumweightedmassself!(particleid, radius, m, ρ)
-        sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
+    if i <= length(ρ)
+        particleid = particleids[i]
+        typeid = typeids[i]
+
+        sumweightedmassself!(particleid, radius[typeid], m[typeid], ρ[typeid])
+        sumweightedmassneighbors!(
+            i,
+            particleids,
+            typeids,
+            neighborindexes,
+            dimension,
+            r,
+            radius,
+            m,
+            ρ,
+        )
     end
     return nothing
 end
 
 """
 ```julia
-computedensity_cuda!(neighborids, dimension, r, radius, m, ρ)
+computedensity_cuda!(particleids, typeids, neighborindexes, dimension, p, r, m, ρ)
 ```
 
 Compute the density of all particles on the GPU
 
 # Arguments:
 
-  - `neighborids::Array`: input array of neighbor particle indices
-  - `dimension::Int`:     spatial dimension of problem
-  - `r::Array`:           input array of particle positions
-  - `radius::Array`:      input array of particle radi
-  - `m::Array`:           input array of particle masses
-  - `ρ::Array`:            output array of particle densities
+  - `particleids::Array`:     input array of particle ids by type
+  - `typeids::Array`:         input array of particle type ids
+  - `neighborindexes::Array`: input array of neighbor particle global indexes
+  - `dimension::Int`:         spatial dimension of problem
+  - `r::StateData`:           input arrays of particle positions by particle type and id
+  - `radius::StateData`:      input arrays of particle radi by particle type and id
+  - `m::StateData`:           input arrays of particle masses by particle type and id
+  - `ρ::StateData`:           output arrays of particle densities by particle type and id
 
 # Returns:
 
   - none
 """
 function computedensity_cuda!(
-    neighborids::Array,
+    particleids::Array,
+    typeids::Array,
+    neighboridexes::Array,
     dimension::Int,
-    r::Array,
-    radius::Array,
-    m::Array,
-    ρ::Array,
+    r::StateData,
+    radius::StateData,
+    m::StateData,
+    ρ::StateData,
 )
-    @cuda threads = length(ρ) computedensity_particle!(
-        neighborids,
+    @cuda threads = length(particleids) computedensity_particle!(
+        particleids,
+        typeids,
+        neighborindexes,
         dimension,
         r,
         radius,
@@ -86,41 +107,44 @@ end
 
 """
 ```julia
-computepressure_particle!(ρ, typeids, ρ0, c, refdensityfactor, exponent, p)
+computepressure_particle!(particleids, typeids, ρ, ρ0, c, refdensityfactor, exponent, p)
 ```
 
 Compute the pressure for single particle on a single GPU thread
 
 # Arguments:
 
-  - `ρ::Array`:                input array of particle densities
+  - `particleids::Array`:      input array of particle ids by type
   - `typeids::Array`:          input array of particle type ids
+  - `ρ::StateData`:            input arrays of particle densities by particle type and id
   - `ρ0::Array`:               input array of initial densities by particle type
   - `c::Float`:                speed of sound
   - `refdensityfactor::Array`: input array of reference density factors by particle type
   - `exponent::Array`:         input array of exponent by particle type
-  - `p::Array`:                output array of particle pressures
+  - `p::StateData`:            output arrays of particle pressures by particle type and id
 
 # Returns:
 
   - none
 """
 function computepressure_particle!(
-    ρ::Array,
+    particleids::Array,
     typeids::Array,
+    ρ::StateData,
     ρ0::Array,
     c,
     refdensityfactor::Array,
     exponent::Array,
-    p::Array,
+    p::StateData,
 )
-    particleid = threadIdx().x
+    i = threadIdx().x
 
-    if particleid <= length(p)
-        typeid = typeids[particleid]
+    if i <= length(p)
+        particleid = particleids[i]
+        typeid = typeids[i]
 
-        p[particleid] = densitytopressure!(
-            ρ[particleid],
+        p[typeid][particleid] = densitytopressure!(
+            ρ[typeid][particleid],
             ρ0[typeid],
             c,
             refdensityfactor[typeid],
@@ -132,37 +156,40 @@ end
 
 """
 ```julia
-computepressure_cuda!(ρ, typeids, ρ0, c, refdensityfactor, exponent, p)
+computepressure_cuda!(particleids, typeids, ρ, ρ0, c, refdensityfactor, exponent, p)
 ```
 
 Compute the pressure for all particles on the GPU
 
 # Arguments:
 
-  - `ρ::Array`:                input array of particle densities
+  - `particleids::Array`:      input array of particle ids by type
   - `typeids::Array`:          input array of particle type ids
+  - `ρ::StateData`:            input arrays of particle densities by particle type and id
   - `ρ0::Array`:               input array of initial densities by particle type
   - `c::Float`:                speed of sound
   - `refdensityfactor::Array`: input array of reference density factors by particle type
   - `exponent::Array`:         input array of exponent by particle type
-  - `p::Array`:                output array of particle pressures
+  - `p::StateData`:            output arrays of particle pressures by particle type and id
 
 # Returns:
 
   - none
 """
 function computepressure_cuda!(
-    ρ::Array,
+    particleids::Array,
     typeids::Array,
+    ρ::StateData,
     ρ0::Array,
     c,
     refdensityfactor::Array,
     exponent::Array,
-    p::Array,
+    p::StateData,
 )
-    @cuda threads = length(p) computepressure_particle!(
-        ρ,
+    @cuda threads = length(particleids) computepressure_particle!(
+        particleids,
         typeids,
+        ρ,
         ρ0,
         c,
         refdensityfactor,
@@ -179,8 +206,9 @@ end
 """
 ```julia
 computeforces_particle!(
-    neighborids,
+    particleids,
     typeids,
+    neighborids,
     μ_dynamic,
     μ_bulk,
     dimension,
@@ -200,48 +228,51 @@ Compute the forces for a single particle on a single GPU thread
 
 # Arguments:
 
-  - `neighborids::Array`: input array of neighbor particle indices
-  - `typeids::Array`:     input array of particle type ids
-  - `μ_dynamic::Array`:   input array of dynamic viscosity for each particle type
-  - `μ_bulk::Array`:      input array of bulk viscosity for each particle type
-  - `dimension::Int`:     spatial dimension of problem
-  - `r::Array`:           input array of particle positions
-  - `radius::Array`:      input array of particle radi
-  - `m::Array`:           input array of particle masses
-  - `ρ::Array`:           input array of particle densities
-  - `p::Array`:           input array of particle pressures
-  - `v::Array`:           input array of particle velocities
-  - `a::Array`:           input array of particle acceleration
-  - `v_modified::Array`:  output array of modified particle velocities
-  - `a_modified::Array`:  output array of modified particle acceleration
+  - `particleids::Array`:     input array of particle ids by type
+  - `typeids::Array`:         input array of particle type ids
+  - `neighborindexes::Array`: input array of neighbor particle global indexes
+  - `μ_dynamic::Array`:       input array of dynamic viscosity by particle type
+  - `μ_bulk::Array`:          input array of bulk viscosity by particle type
+  - `dimension::Int`:         spatial dimension of problem
+  - `r::StateData`:           input arrays of particle positions by particle type and id
+  - `radius::StateData`:      input arrays of particle radi by particle type and id
+  - `m::StateData`:           input arrays of particle masses by particle type and id
+  - `ρ::StateData`:           input arrays of particle densities by particle type and id
+  - `p::StateData`:           input arrays of particle pressures by particle type and id
+  - `v::StateData`:           input arrays of particle velocities by particle type and id
+  - `a::StateData`:           input arrays of particle acceleration by particle type and id
+  - `v_modified::StateData`:  output arrays of modified particle velocities by particle type and id
+  - `a_modified::StateData`:  output arrays of modified particle acceleration by particle type and id
 
 # Returns:
 
   - none
 """
 function computeforces_particle!(
-    neighborids::Array,
+    particleids::Array,
     typeids::Array,
+    neighborindexes::Array,
     μ_dynamic::Array,
     μ_bulk::Array,
     dimension::Int,
-    r::Array,
-    radius::Array,
-    m::Array,
-    ρ::Array,
-    p::Array,
-    v::Array,
-    a::Array,
-    v_modified::Array,
-    a_modified::Array,
+    r::StateData,
+    radius::StateData,
+    m::StateData,
+    ρ::StateData,
+    p::StateData,
+    v::StateData,
+    a::StateData,
+    v_modified::StateData,
+    a_modified::StateData,
 )
-    particleid = threadIdx().x
+    i = threadIdx().x
 
-    if particleid <= length(a_modified)/dimension
+    if i <= length(particleids)
         momentumequationneighbors!(
-            particleid,
-            neighborids,
+            i,
+            particleids,
             typeids,
+            neighborindexes,
             μ_dynamic,
             μ_bulk,
             r,
@@ -261,8 +292,9 @@ end
 """
 ```julia
 computeforces_cuda!(
-    neighborids,
+    particleids,
     typeids,
+    neighborids,
     μ_dynamic,
     μ_bulk,
     dimension,
@@ -282,44 +314,47 @@ Compute the forces for all particles on the GPU
 
 # Arguments:
 
-  - `neighborids::Array`: input array of neighbor particle indices
-  - `typeids::Array`:     input array of particle type ids
-  - `μ_dynamic::Array`:   input array of dynamic viscosity for each particle type
-  - `μ_bulk::Array`:      input array of bulk viscosity for each particle type
-  - `dimension::Int`:     spatial dimension of problem
-  - `r::Array`:           input array of particle positions
-  - `radius::Array`:      input array of particle radi
-  - `m::Array`:           input array of particle masses
-  - `ρ::Array`:           input array of particle densities
-  - `p::Array`:           input array of particle pressures
-  - `v::Array`:           input array of particle velocities
-  - `a::Array`:           input array of particle acceleration
-  - `v_modified::Array`:  output array of modified particle velocities
-  - `a_modified::Array`:  output array of modified particle acceleration
+  - `particleids::Array`:     input array of particle ids by type
+  - `typeids::Array`:         input array of particle type ids
+  - `neighborindexes::Array`: input array of neighbor particle global indexes
+  - `μ_dynamic::Array`:       input array of dynamic viscosity by particle type
+  - `μ_bulk::Array`:          input array of bulk viscosity by particle type
+  - `dimension::Int`:         spatial dimension of problem
+  - `r::StateData`:           input arrays of particle positions by particle type and id
+  - `radius::StateData`:      input arrays of particle radi by particle type and id
+  - `m::StateData`:           input arrays of particle masses by particle type and id
+  - `ρ::StateData`:           input arrays of particle densities by particle type and id
+  - `p::StateData`:           input arrays of particle pressures by particle type and id
+  - `v::StateData`:           input arrays of particle velocities by particle type and id
+  - `a::StateData`:           input arrays of particle acceleration by particle type and id
+  - `v_modified::StateData`:  output arrays of modified particle velocities by particle type and id
+  - `a_modified::StateData`:  output arrays of modified particle acceleration by particle type and id
 
 # Returns:
 
   - none
 """
 function computeforces_cuda!(
-    neighborids::Array,
+    particleids::Array,
     typeids::Array,
+    neighborindexes::Array,
     μ_dynamic::Array,
     μ_bulk::Array,
     dimension::Int,
-    r::Array,
-    radius::Array,
-    m::Array,
-    ρ::Array,
-    p::Array,
-    v::Array,
-    a::Array,
-    v_modified::Array,
-    a_modified::Array,
+    r::StateData,
+    radius::StateData,
+    m::StateData,
+    ρ::StateData,
+    p::StateData,
+    v::StateData,
+    a::StateData,
+    v_modified::StateData,
+    a_modified::StateData,
 )
-    @cuda threads = (length(a_modified)/dimension) accelerationaddmomentumcontribution_particle!(
-        neighborids,
+    @cuda threads = length(particleids) accelerationaddmomentumcontribution_particle!(
+        particleids,
         typeids,
+        neighborindexes,
         μ_dynamic,
         μ_bulk,
         r,

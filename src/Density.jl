@@ -11,7 +11,7 @@ Compute the density of the particle from the shape function, radius, and mass
 
 # Arguments:
 
-  - `particleid::Int`: index number of current particle
+  - `particleid::Int`: local id number of current particle
   - `dimension::Int`:  spatial dimension of problem
   - `radius::Array`:   input array of particle radi
   - `m::Array`:        input array of particle masses
@@ -54,20 +54,32 @@ end
 
 """
 ```julia
-sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
+sumweightedmassneighbors!(
+    particleindex,
+    particleids,
+    typeids,
+    neighborindexes,
+    dimension,
+    r,
+    radius,
+    m,
+    ρ,
+)
 ```
 
 Sum the density contributions to the particle from neighbor particles
 
 # Arguments:
 
-  - `particleid::Int`:    index number of current particle
-  - `neighborids::Array`: input array of neighbor particle indices
-  - `dimension::Int`:     spatial dimension of problem
-  - `r::Array`:           input array of particle positions
-  - `radius::Array`:      input array of particle radi
-  - `m::Array`:           input array of particle masses
-  - `ρ::Array`:           output array of particle densities
+  - `particleindex::Int`:     global index number of current particle
+  - `particleids::Array`:     input array of particle ids by type
+  - `typeids::Array`:         input array of particle type ids
+  - `neighborindexes::Array`: input array of neighbor particle global indexes
+  - `dimension::Int`:         spatial dimension of problem
+  - `r::StateData`:           input arrays of particle positions by particle type and id
+  - `radius::StateData`:      input arrays of particle radi by particle type and id
+  - `m::StateData`:           input arrays of particle masses by particle type and id
+  - `ρ::StateData`:           output arrays of particle densities by particle type and id
 
 # Returns:
 
@@ -98,22 +110,31 @@ sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
 ```
 """
 function sumweightedmassneighbors!(
-    particleid::Int,
-    neighborids::Array,
+    particleindex::Int,
+    particleids::Array,
+    typeids::Array,
+    neighborindexes::Array,
     dimension::Int,
-    r::Array,
-    radius::Array,
-    m::Array,
-    ρ::Array,
+    r::StateData,
+    radius::StateData,
+    m::StateData,
+    ρ::StateData,
 )
-    for i = neighborids[particleid]:(neighborids[particleid+1]-1)
-        neighborid = neighborids[i]
+    particleid = particleids[particleindex]
+    typeid = typeids[particleindex]
+
+    for i = neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
+        neighborindex = neighborindexes[i]
+        neighborid = particleids[neighborindex]
+        neighbortypeid = typeids[neighborindex]
+
         absdistance = norm(
-            view(r, ((particleid-1)*dimension+1):(particleid*dimension)) -
-            view(r, ((neighborid-1)*dimension+1):(neighborid*dimension)),
+            view(r[typeid], ((particleid-1)*dimension+1):(particleid*dimension)) -
+            view(r[neighbortypeid], ((neighborid-1)*dimension+1):(neighborid*dimension)),
         )
 
-        ρ[particleid] += w(absdistance, radius[particleid], dimension) * m[particleid]
+        ρ[typeid][particleid] +=
+            w(absdistance, radius[typeid][particleid], dimension) * m[typeid][particleid]
     end
     return nothing
 end

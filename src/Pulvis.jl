@@ -5,7 +5,12 @@
 module Pulvis
 
 # Dependencies
+using CUDA
 using LinearAlgebra: norm, dot
+using StaticArrays
+
+# Types
+include("Types.jl")
 
 # Utilities
 include("Enums.jl")

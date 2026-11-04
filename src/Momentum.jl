@@ -102,7 +102,7 @@ momentumequationneighbors!(
 neighborindex = neighborindexes[3]
 @assert a[typeids[neighborindex]][((particleids[neighborindex]-1)*dimension+1):(particleids[neighborindex]*dimension)] ≈
         [0.0, 0.0]
-neighborindex = neighborindexes[3]
+neighborindex = neighborindexes[4]
 @assert a[typeids[neighborindex]][((particleids[neighborindex]-1)*dimension+1):(particleids[neighborindex]*dimension)] ≈
         [0.0, 0.0]
 

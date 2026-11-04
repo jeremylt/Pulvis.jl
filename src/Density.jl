@@ -27,15 +27,18 @@ Compute the density of the particle from the shape function, radius, and mass
 # setup
 particleid = 1
 dimension = 2
-radius = [1.0]
-m = [42.0]
-ρ = [0.0]
+radius = StateData{1}([[1.0]])
+m = StateData{1}([[42.0]])
+ρ = StateData{1}([[0.0]])
+
+# set shape function
+setkernelshape(Kernel.CubicSpline)
 
 # compute density
-sumweightedmassself!(particleid, dimension, radius, m, ρ)
+sumweightedmassself!(particleid, dimension, radius[1], m[1], ρ[1])
 
 # verify
-@assert ρ[particleid] ≈ 116.29365122090275
+@assert ρ[1][particleid] ≈ 76.39437268410974
 
 # output
 
@@ -89,21 +92,38 @@ Sum the density contributions to the particle from neighbor particles
 
 ```jldoctest
 # setup
-particleid = 1
-neighborids = [3, 5, 2, 3]
+particleindex = 1
+particleids = [1, 2, 1]
+typeids = [1, 1, 2]
+neighborindexes = [3, 5, 2, 3]
 dimension = 2
-r = [1.0, 1.0, 1.1, 1.2, 1.3, 1.4]
-radius = [1.0, 1.1, 1, 2]
-m = [42.0, 13.0, 14.0]
-ρ = [1.0, 0.0, 0.0]
+r = StateData{2}([[1.0, 1.0, 1.1, 1.2], [1.3, 1.4]])
+radius = StateData{2}([[1.0, 1.1], [1.2]])
+m = StateData{2}([[42.0, 13.0], [14.0]])
+ρ = StateData{2}([[1.0, 0.0], [0.0]])
+
+# set shape function
+setkernelshape(Kernel.CubicSpline)
 
 # compute density
-sumweightedmassneighbors!(particleid, neighborids, dimension, r, radius, m, ρ)
+sumweightedmassneighbors!(
+    particleindex,
+    particleids,
+    typeids,
+    neighborindexes,
+    dimension,
+    r,
+    radius,
+    m,
+    ρ,
+)
 
 # verify
-@assert ρ[particleid] ≈ 210.73260272804137
-@assert ρ[neighborids[3]] ≈ 0.0
-@assert ρ[neighborids[4]] ≈ 0.0
+@assert ρ[typeids[particleindex]][particleids[particleindex]] ≈ 78.69934436250794
+neighborindex = neighborindexes[3]
+@assert ρ[typeids[neighborindex]][particleids[neighborindex]] ≈ 0.0
+neighborindex = neighborindexes[4]
+@assert ρ[typeids[neighborindex]][particleids[neighborindex]] ≈ 0.0
 
 # output
 

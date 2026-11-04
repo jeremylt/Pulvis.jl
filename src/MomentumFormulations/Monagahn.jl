@@ -90,7 +90,15 @@ pressuregradient!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
 
 ```
 """
-function pressuregradient_Monagahn!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij::Array, a::Array)
+function pressuregradient_Monagahn!(
+    ρ_i,
+    ρ_j,
+    p_i,
+    p_j,
+    speccoeff,
+    e_ij::AbstractArray,
+    a::AbstractArray,
+)
     a .+= -(p_i / ρ_i^2 + p_j / ρ_j^2) * speccoeff * e_ij
     return nothing
 end
@@ -196,8 +204,8 @@ convection_coeff = kernelfac * (μ_bulk + μ_scaled)
 function shearforces_Monagahn!(
     ρ_i,
     ρ_j,
-    v_i::Array,
-    v_j::Array,
+    v_i::AbstractArray,
+    v_j::AbstractArray,
     kernelfac,
     μ_i,
     μ_j,
@@ -205,8 +213,8 @@ function shearforces_Monagahn!(
     μ_bulk_j,
     absdist,
     speccoeff,
-    e_ij::Array,
-    a::Array,
+    e_ij::AbstractArray,
+    a::AbstractArray,
 )
     μ_scaled = (μ_i > 0.0 && μ_j > 0.0) ? (2.0 * μ_i * μ_j / (3.0 * (μ_i + μ_j))) : 0.0
     μ_bulk =
@@ -275,8 +283,8 @@ function standardbackgroundpressure_Monagahn!(
     ρ_j,
     p_background,
     speccoeff,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     a_modified .+= -speccoeff * p_background * (1.0 / ρ_i^2 + 1.0 / ρ_j^2) * e_ij
     return nothing
@@ -355,8 +363,8 @@ function generalizedbackgroundpressure_Monagahn!(
     m_j,
     p_background_mod,
     dWdr_ij_mod,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     a_modified .+= -p_background_mod * m_j / ρ_i^2 * dWdr_ij_mod * e_ij
     return nothing
@@ -445,13 +453,13 @@ A_ij_e_ij = 1.0 / ρ_i^2 * A_i * e_ij + 1.0 / ρ_j^2 * A_j * e_ij
 function modifiedvelocitycontribution_Monagahn!(
     ρ_i,
     ρ_j,
-    v_i::Array,
-    v_j::Array,
-    v_modified_i::Array,
-    v_modified_j::Array,
+    v_i::AbstractArray,
+    v_j::AbstractArray,
+    v_modified_i::AbstractArray,
+    v_modified_j::AbstractArray,
     speccoeff,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     A_ij_e_ij = [0.0, 0.0, 0.0]
 

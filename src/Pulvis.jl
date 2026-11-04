@@ -6,7 +6,7 @@ module Pulvis
 
 # Dependencies
 using CUDA
-using LinearAlgebra: norm, dot
+using LinearAlgebra: norm, dot, ⋅
 using StaticArrays
 
 # Types

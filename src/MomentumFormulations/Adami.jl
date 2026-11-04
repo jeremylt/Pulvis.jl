@@ -94,7 +94,15 @@ pressuregradient!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
 
 ```
 """
-function pressuregradient_Adami!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
+function pressuregradient_Adami!(
+    ρ_i,
+    ρ_j,
+    p_i,
+    p_j,
+    speccoeff,
+    e_ij::AbstractArray,
+    a::AbstractArray,
+)
     a .+= -(ρ_i * p_j + ρ_j * p_i) / (ρ_i + ρ_j) * speccoeff * e_ij
     return nothing
 end
@@ -189,8 +197,8 @@ shearforces!(
 function shearforces_Adami!(
     ρ_i,
     ρ_j,
-    v_i::Array,
-    v_j::Array,
+    v_i::AbstractArray,
+    v_j::AbstractArray,
     kernelfac,
     μ_i,
     μ_j,
@@ -198,8 +206,8 @@ function shearforces_Adami!(
     μ_bulk_j,
     absdist,
     speccoeff,
-    e_ij::Array,
-    a::Array,
+    e_ij::AbstractArray,
+    a::AbstractArray,
 )
     if !(μ_i > 0.0 && μ_j > 0.0)
         return
@@ -258,8 +266,8 @@ function standardbackgroundpressure_Adami!(
     ρ_j,
     p_background,
     speccoeff,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     a_modified .+= -speccoeff * p_background * e_ij
     return nothing
@@ -338,8 +346,8 @@ function generalizedbackgroundpressure_Adami!(
     m_j,
     p_background_mod,
     dWdr_ij_mod,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     a_modified .+= -p_background_mod * m_i / ρ_i^2 * dWdr_ij_mod * e_ij
     return nothing
@@ -428,13 +436,13 @@ A_ij_e_ij = 0.5 * A_i * e_ij + 0.5 * A_j * e_ij
 function modifiedvelocitycontribution_Adami!(
     ρ_i,
     ρ_j,
-    v_i::Array,
-    v_j::Array,
-    v_modified_i::Array,
-    v_modified_j::Array,
+    v_i::AbstractArray,
+    v_j::AbstractArray,
+    v_modified_i::AbstractArray,
+    v_modified_j::AbstractArray,
     speccoeff,
-    e_ij::Array,
-    a_modified::Array,
+    e_ij::AbstractArray,
+    a_modified::AbstractArray,
 )
     A_ij_e_ij = [0.0, 0.0, 0.0]
 

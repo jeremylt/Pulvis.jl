@@ -17,7 +17,6 @@ include("Types.jl")
 include("Data.jl")
 include("Enums.jl")
 include("Kernels.jl")
-include("Utilities.jl")
 
 # Physics
 include("EquationsOfState.jl")

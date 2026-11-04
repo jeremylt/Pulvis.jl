@@ -36,7 +36,7 @@ function computedensity_particle!(
 )
     i = threadIdx().x
 
-    if i <= length(ρ)
+    if i <= length(particleids)
         particleid = particleids[i]
         typeid = typeids[i]
 
@@ -139,7 +139,7 @@ function computepressure_particle!(
 )
     i = threadIdx().x
 
-    if i <= length(p)
+    if i <= length(particleids)
         particleid = particleids[i]
         typeid = typeids[i]
 

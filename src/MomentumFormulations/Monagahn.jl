@@ -377,11 +377,11 @@ modifiedvelocitycontribution_Monagahn!(
     ρ_j,
     v_i,
     v_j,
-    v_modified_i,
-    v_modified_j,
     speccoeff,
     e_ij,
-    a_modified,
+    a_modified;
+    v_modified_i,
+    v_modified_j,
 )
 ```
 
@@ -393,11 +393,11 @@ Compute the modified velocity force contribution
   - `ρ_j::Float`:          density of second particle
   - `v_i::Array`:          velocity of first particle
   - `v_j::Array`:          velocity of second particle
-  - `v_modified_i::Array`: modified velocity of first particle
-  - `v_modified_j::Array`: modified velocity of second particle
   - `speccoeff::Float`:    specific coefficient
   - `e_ij::Array`:         normalized vector between particles
   - `a_modified::Array`:   output modified acceleration array to sum in the background pressure forces
+  - `v_modified_i::Array`: modified velocity of first particle, optional
+  - `v_modified_j::Array`: modified velocity of second particle, optional
 
 # Returns:
 
@@ -426,11 +426,11 @@ modifiedvelocitycontribution!(
     ρ_j,
     v_i,
     v_j,
-    v_modified_i,
-    v_modified_j,
     speccoeff,
     e_ij,
     a_modified,
+    v_modified_i = v_modified_i,
+    v_modified_j = v_modified_j,
 )
 
 # verify
@@ -444,7 +444,14 @@ for i = 1:3
 end
 A_ij_e_ij = 1.0 / ρ_i^2 * A_i * e_ij + 1.0 / ρ_j^2 * A_j * e_ij
 
-@assert a_modified ≈ [1.0, 2.0, 3.0] + speccoef * A_ij_e_ij
+@assert a_modified ≈ [1.0, 2.0, 3.0] + speccoeff * A_ij_e_ij
+
+# try with no v_modified_*
+a_modified = [1.0, 2.0, 3.0]
+modifiedvelocitycontribution!(ρ_i, ρ_j, v_i, v_j, speccoeff, e_ij, a_modified)
+
+# verify
+@assert a_modified ≈ [1.0, 2.0, 3.0]
 
 # output
 
@@ -455,18 +462,18 @@ function modifiedvelocitycontribution_Monagahn!(
     ρ_j,
     v_i::AbstractArray,
     v_j::AbstractArray,
-    v_modified_i::AbstractArray,
-    v_modified_j::AbstractArray,
     speccoeff,
     e_ij::AbstractArray,
-    a_modified::AbstractArray,
+    a_modified::AbstractArray;
+    v_modified_i = nothing,
+    v_modified_j = nothing,
 )
     A_ij_e_ij = [0.0, 0.0, 0.0]
 
-    if true
+    if v_modified_i != nothing
         A_ij_e_ij .+= ((v_modified_i - v_i) ⋅ e_ij) / ρ_i * v_i
     end
-    if true
+    if v_modified_j != nothing
         A_ij_e_ij .+= ((v_modified_j - v_j) ⋅ e_ij) / ρ_j * v_j
     end
 

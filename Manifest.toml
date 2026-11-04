@@ -2,7 +2,7 @@
 
 julia_version = "1.12.5"
 manifest_format = "2.0"
-project_hash = "552fbd90668fa4a0b909478a20bcdb9cf3d36aba"
+project_hash = "8fc3b78882953c39d95b4b81ee92a1ce498b6649"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -511,7 +511,7 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
 
 [[deps.Pulvis]]
-deps = ["CUDA", "Enzyme"]
+deps = ["CUDA", "Enzyme", "StaticArrays"]
 path = "."
 uuid = "cbc3886f-6f98-48da-b488-8cb08f47fbb8"
 version = "0.1.0"

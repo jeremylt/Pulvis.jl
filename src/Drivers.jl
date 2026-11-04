@@ -46,10 +46,12 @@ function setdevicecomputation(flag::Bool)
         global computedensity! = computedensity_cuda!
         global computepressure! = computepressure_cuda!
         global computeforces! = computeforces_cuda!
+        global PulvisVector = CuVector
     else
         global computedensity! = computedensity_cpu!
         global computepressure! = computepressure_cpu!
         global computeforces! = computeforces_cpu!
+        global PulvisVector = Vector
     end
     return nothing
 end

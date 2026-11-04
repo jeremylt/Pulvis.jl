@@ -6,6 +6,7 @@ module Pulvis
 
 # Dependencies
 using CUDA
+using Adapt
 using LinearAlgebra: norm, dot, ⋅
 using StaticArrays
 
@@ -13,6 +14,7 @@ using StaticArrays
 include("Types.jl")
 
 # Utilities
+include("Data.jl")
 include("Enums.jl")
 include("Kernels.jl")
 include("Utilities.jl")

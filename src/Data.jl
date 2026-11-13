@@ -181,10 +181,10 @@ function addparticlestatedata!(
 
         if typelength > statelength
             newstatedata = []
-            for i = 1:statelength
-                push!(newstatedata, statedata[statename][i])
+            for j = 1:statelength
+                push!(newstatedata, statedata[statename][j])
             end
-            for i = (statelength+1):typelength
+            for _ = (statelength+1):typelength
                 push!(newstatedata, PulvisVector{Float64}())
             end
             statedata[statename] = adapt(
@@ -269,10 +269,10 @@ function squareparticlestatedata!(typeinfo::Array, stateinfo::Array, statedata::
 
         if typelength > statelength
             newstatedata = []
-            for i = 1:statelength
-                push!(newstatedata, statedata[stateinfo[i].name][i])
+            for j = 1:statelength
+                push!(newstatedata, statedata[stateinfo[i].name][j])
             end
-            for i = (statelength+1):typelength
+            for _ = (statelength+1):typelength
                 push!(newstatedata, PulvisVector{Float64}())
             end
             statedata[stateinfo[i].name] = adapt(
@@ -311,44 +311,96 @@ typeinfo = []
 stateinfo = []
 statedata = Dict()
 
-# add new types
+# add particle types
 addparticletype!("foo", 3, typeinfo)
 addparticletype!("bar", 4, typeinfo)
 
-# add new states
+# add particle states
 addparticlestate!("baz", 2, stateinfo)
 addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
-addparticlestatedata!("bar", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
+addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+
+# square off state arrays
+squareparticlestatedata!(typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[1].count == 3
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][1]) == 9
+@assert length(statedata["baz"][1]) == 6
 
 # remove particles
 removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[1].count == 1
-@assert length(statedata[1]["baz"]) == 1
-@assert length(statedata[1]["quux"]) == 1
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][1]) == 9
+@assert length(statedata["baz"][1]) == 6
+
+# verify
+@assert typeinfo[2].count == 4
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][2]) == 0
+@assert length(statedata["baz"][2]) == 8
 
 # remove more particles
 removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[1].count == 2
-@assert length(statedata[1]["baz"]) == 2
-@assert length(statedata[1]["quux"]) == 2
+@assert typeinfo[2].count == 2
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][2]) == 0
+@assert length(statedata["baz"][2]) == 8
 
 # output
 
 ```
 """
-function addparticlestatedata!(
+function removeparticles!(
     typename::String,
     particleids::Array,
     typeinfo::Array,
     stateinfo::Array,
     statedata::Dict,
 )
+    typelength = length(typeinfo)
+    typeindex = findfirst(t -> t.name == typename, typeinfo)
+    @assert typeindex != nothing "Type not known"
+    sort(particleids, rev=true)
+
+    for i in 1:length(stateinfo)
+        newstatedata = []
+
+        # Copy refs to the other types
+        for j = 1:typeindex-1
+          push!(newstatedata, statedata[stateinfo[i].name][j])
+        end
+        # Drop the target particles in the target state
+        data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
+        numparticles = typeinfo[typeindex].count
+        for id in particleids
+            if id < length(data)
+                for j = id*stateinfo[i].dimension:(numparticles-1)*stateinfo[i].dimension
+                    data[j] = data[j+stateinfo[i].dimension]
+                end
+            end
+            numparticles -= 1
+        end
+        push!(newstatedata, adapt(PulvisVector{Float64}, data))
+        # Copy the rest of the refs to the other types
+        for j = typeindex+1:typelength
+          push!(newstatedata, statedata[stateinfo[i].name][j])
+        end
+        # And copy back up to the GPU
+        statedata[stateinfo[i].name] = adapt(
+            PulvisVector,
+            StateData{typelength,PulvisVector{Float64}}(newstatedata),
+        )
+    end
+    typeinfo[typeindex] = TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count - length(particleids))
     return nothing
 end

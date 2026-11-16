@@ -395,7 +395,7 @@ function removeparticles!(
             end
             numparticles -= 1
         end
-        newstatedata[j] = adapt(PulvisVector{Float64}, data)
+        newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
         # Copy the rest of the refs to the other types
         for j = (typeindex+1):typelength
             newstatedata[j] = statedata[stateinfo[i].name][j]
@@ -466,7 +466,9 @@ addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
 # verify
 @assert typeinfo[1].count == 4
 @assert length(statedata["quux"][1]) == 12
+@assert Vector(statedata["quux"][1])[(end-2):end] ≈ newdata["quux"]
 @assert length(statedata["baz"][1]) == 8
+@assert Vector(statedata["baz"][1])[(end-1):end] ≈ newdata["baz"]
 
 # verify
 @assert typeinfo[2].count == 4
@@ -476,12 +478,13 @@ addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
 # add more particles
 newdata = Dict()
 newdata["baz"] = [1.0, 2.0, 3.0, 4.0]
-removeparticles!("bar", 2, newdata, typeinfo, stateinfo, statedata)
+addparticles!("bar", 2, newdata, typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[2].count == 6
 @assert length(statedata["quux"][2]) == 0
 @assert length(statedata["baz"][2]) == 12
+@assert Vector(statedata["baz"][2])[(end-3):end] ≈ newdata["baz"]
 
 # output
 
@@ -501,10 +504,13 @@ function addparticles!(
 
     for i = 1:length(stateinfo)
         # Sanity check
-        @assert (
-            length(newdata[stateinfo[i].name]) ==
-            typeinfo[typeindex].count + numparticles * stateinfo[i].dimension
-        ) || (length(newdata[stateinfo[i].name]) == 0)
+        @assert !haskey(newdata, stateinfo[i].name) || (
+            length(newdata[stateinfo[i].name]) == numparticles * stateinfo[i].dimension
+        )
+
+        if !haskey(newdata, stateinfo[i].name)
+            continue
+        end
 
         if length(newdata[stateinfo[i].name]) > 0
             newstatedata = []
@@ -516,17 +522,18 @@ function addparticles!(
             end
             # Add the target particles in the target state
             data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
-            if (statedata[stateinfo[i].name]) <
-               (typeinfo[typeindex].count + numparticles * stateinfo[i].dimension)
+            if length(statedata[stateinfo[i].name]) <
+               ((typeinfo[typeindex].count + numparticles) * stateinfo[i].dimension)
                 resize!(
                     data,
-                    typeinfo[typeindex].count + numparticles * stateinfo[i].dimension,
+                    (typeinfo[typeindex].count + numparticles) * stateinfo[i].dimension,
                 )
             end
             for j = 1:length(newdata[stateinfo[i].name])
-                data[numparticles*stateinfo[i].dimension+j] = newdata[stateinfo[i].name][j]
+                data[typeinfo[typeindex].count*stateinfo[i].dimension+j] =
+                    newdata[stateinfo[i].name][j]
             end
-            newstatedata[j] = adapt(PulvisVector{Float64}, data)
+            newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
             # Copy the rest of the refs to the other types
             for j = (typeindex+1):typelength
                 newstatedata[j] = statedata[stateinfo[i].name][j]

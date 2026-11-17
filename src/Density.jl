@@ -143,6 +143,7 @@ function sumweightedmassneighbors!(
     particleid = particleids[particleindex]
     typeid = typeids[particleindex]
 
+    # Loop over pairs for target particle
     for i = neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
         neighborindex = neighborindexes[i]
         neighborid = particleids[neighborindex]
@@ -153,6 +154,7 @@ function sumweightedmassneighbors!(
             view(r[neighbortypeid], ((neighborid-1)*dimension+1):(neighborid*dimension)),
         )
 
+        # Add contribution to target particle from each pair
         ρ[typeid][particleid] +=
             w(absdistance, radius[typeid][particleid], dimension) * m[typeid][particleid]
     end

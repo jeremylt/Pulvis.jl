@@ -172,27 +172,33 @@ function addparticlestatedata!(
     typeindex = findfirst(t -> t.name == typename, typeinfo)
     @assert typeindex != nothing "Type not known"
 
-
+    # Loop over state names for the type
     for statename in statenames
         hasstate = haskey(statedata, statename)
         statelength = hasstate ? length(statedata[statename]) : 0
         stateindex = findfirst(s -> s.name == statename, stateinfo)
         @assert stateindex != nothing "State not known"
 
+        # Expand data for specific state for current type, as needed
         if typelength > statelength
             newstatedata = []
             resize!(newstatedata, typelength)
+
+            # Copy current pointers
             for j = 1:statelength
                 newstatedata[j] = statedata[statename][j]
             end
+            # Add new empty vectors
             for j = (statelength+1):typelength
                 newstatedata[j] = PulvisVector{Float64}()
             end
+            # And copy to execution space
             statedata[statename] = adapt(
                 PulvisVector,
                 StateData{typelength,PulvisVector{Float64}}(newstatedata),
             )
         end
+        # Allocate vector only if requested
         if initialize
             resize!(
                 statedata[statename][typeindex],
@@ -264,19 +270,25 @@ squareparticlestatedata!(typeinfo, stateinfo, statedata)
 function squareparticlestatedata!(typeinfo::Array, stateinfo::Array, statedata::Dict)
     typelength = length(typeinfo)
 
+    # Check all states
     for i = 1:length(stateinfo)
         hasstate = haskey(statedata, stateinfo[i].name)
         statelength = hasstate ? length(statedata[stateinfo[i].name]) : 0
 
+        # Square off if the state is missing some types
         if typelength > statelength
             newstatedata = []
             resize!(newstatedata, typelength)
+
+            # Copy current pointers
             for j = 1:statelength
                 newstatedata[j] = statedata[stateinfo[i].name][j]
             end
+            # Add new empty vectors
             for j = (statelength+1):typelength
                 newstatedata[j] = PulvisVector{Float64}()
             end
+            # And copy to execution space
             statedata[stateinfo[i].name] = adapt(
                 PulvisVector,
                 StateData{typelength,PulvisVector{Float64}}(newstatedata),
@@ -374,15 +386,16 @@ function removeparticles!(
     @assert typeindex != nothing "Type not known"
     sort(particleids, rev = true)
 
+    # Loop over all states
     for i = 1:length(stateinfo)
         newstatedata = []
         resize!(newstatedata, typelength)
 
-        # Copy refs to the other types
+        # Copy current pointers
         for j = 1:(typeindex-1)
             newstatedata[j] = statedata[stateinfo[i].name][j]
         end
-        # Drop the target particles in the target state
+        # Drop the target particles in the target type
         data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
         numparticles = typeinfo[typeindex].count
         for id in particleids
@@ -396,14 +409,15 @@ function removeparticles!(
             numparticles -= 1
         end
         newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
-        # Copy the rest of the refs to the other types
+        # Copy the rest of the current pointers
         for j = (typeindex+1):typelength
             newstatedata[j] = statedata[stateinfo[i].name][j]
         end
-        # And copy back up to the GPU
+        # And copy to execution space
         statedata[stateinfo[i].name] =
             adapt(PulvisVector, StateData{typelength,PulvisVector{Float64}}(newstatedata))
     end
+    # Finally decrease particle count
     typeinfo[typeindex] =
         TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count - length(particleids))
     return nothing
@@ -502,25 +516,28 @@ function addparticles!(
     typeindex = findfirst(t -> t.name == typename, typeinfo)
     @assert typeindex != nothing "Type not known"
 
+    # Loop over all states
     for i = 1:length(stateinfo)
         # Sanity check
         @assert !haskey(newdata, stateinfo[i].name) || (
             length(newdata[stateinfo[i].name]) == numparticles * stateinfo[i].dimension
         )
 
+        # Skip if state isn't in data to add
         if !haskey(newdata, stateinfo[i].name)
             continue
         end
 
+        # Check if enough space is already allocated
         if length(newdata[stateinfo[i].name]) > 0
             newstatedata = []
             resize!(newstatedata, typelength)
 
-            # Copy refs to the other types
+            # Copy current pointers
             for j = 1:(typeindex-1)
                 newstatedata[j] = statedata[stateinfo[i].name][j]
             end
-            # Add the target particles in the target state
+            # Add the target particles in the target type
             data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
             if length(statedata[stateinfo[i].name]) <
                ((typeinfo[typeindex].count + numparticles) * stateinfo[i].dimension)
@@ -534,17 +551,18 @@ function addparticles!(
                     newdata[stateinfo[i].name][j]
             end
             newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
-            # Copy the rest of the refs to the other types
+            # Copy the rest of the current pointers
             for j = (typeindex+1):typelength
                 newstatedata[j] = statedata[stateinfo[i].name][j]
             end
-            # And copy back up to the GPU
+            # And copy to execution space
             statedata[stateinfo[i].name] = adapt(
                 PulvisVector,
                 StateData{typelength,PulvisVector{Float64}}(newstatedata),
             )
         end
     end
+    # Finally increase particle count
     typeinfo[typeindex] =
         TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count + numparticles)
     return nothing

@@ -141,7 +141,7 @@ function momentumequationneighbors!(
             view(r[typeid], ((particleid-1)*dimension+1):(particleid*dimension))
         absdistance = norm(r_ij)
 
-        # specific coefficient
+        # Specific coefficient
         dWdr_ij = dwdrij(absdistance, radius[typeid][particleid], dimension)
 
         speccoeff = specificcoefficient(
@@ -152,7 +152,7 @@ function momentumequationneighbors!(
             dWdr_ij,
         )
 
-        # pressure gradient
+        # Pressure gradient
         e_ij = (-1.0 / absdistance) * r_ij
 
         pressuregradient!(
@@ -165,7 +165,7 @@ function momentumequationneighbors!(
             view(a[typeid], ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
-        # shear forces
+        # Shear forces
         shearforces!(
             ρ[typeid][particleid],
             ρ[typeid][neighborid],
@@ -182,9 +182,9 @@ function momentumequationneighbors!(
             view(a[typeid], ((particleid-1)*dimension+1):(particleid*dimension)),
         )
 
-        # transport velocity - TODO
+        # Transport velocity - TODO
 
-        # artificial viscosity - TODO
+        # Artificial viscosity - TODO
     end
     return nothing
 end

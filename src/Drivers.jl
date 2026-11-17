@@ -56,5 +56,5 @@ function setdevicecomputation(flag::Bool)
     return nothing
 end
 
-# default driver - cuda
+# Default driver - cuda
 setdevicecomputation(true)

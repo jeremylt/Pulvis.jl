@@ -53,5 +53,5 @@ function setequationsofstate(equationstype::EquationOfState.Type)
     return nothing
 end
 
-# default kernel - GenTait
+# Default kernel - GenTait
 setequationsofstate(EquationOfState.GenTait)

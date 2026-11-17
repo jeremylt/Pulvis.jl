@@ -59,5 +59,5 @@ function setmomentumformulation(formulationtype::MomentumFormulation.Type)
     return nothing
 end
 
-# default kernel - Monagahn
+# Default kernel - Monagahn
 setmomentumformulation(MomentumFormulation.Monagahn)

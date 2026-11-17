@@ -11,14 +11,41 @@ function evaluatetimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)
     # Setup for time step
     buildpairlist!()
 
+    # Get state data
+    r = getparticlestatedata(statedata, "position")
+    radius = getparticlestatedata(statedata, "radius")
+    m = getparticlestatedata(statedata, "mass")
+    ρ = getparticlestatedata(statedata, "density")
+    p = getparticlestatedata(statedata, "pressure")
+    v = getparticlestatedata(statedata, "velocity")
+    a = getparticlestatedata(statedata, "acceleration")
+    v_modified = getparticlestatedata(statedata, "modified velocity")
+    a_modified = getparticlestatedata(statedata, "modified acceleration")
+
     # Compute density field
-    computedensity!()
+    computedensity!(particleids, typeids, neighboridexes, dimension, r, radius, m, ρ)
 
     # Convert from density to pressure
-    computepressure!()
+    computepressure!(particleids, typeids, ρ, ρ0, c, refdensityfactor, exponent, p)
 
     # Compute various forces, acceleration, etc from density and pressure
-    computeforces!()
+    computeforces!(
+        particleids,
+        typeids,
+        neighborindexes,
+        μ_dynamic,
+        μ_bulk,
+        dimension,
+        r,
+        radius,
+        m,
+        ρ,
+        p,
+        v,
+        a,
+        v_modified,
+        a_modified,
+    )
 end
 
 function posttimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)

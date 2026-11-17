@@ -211,6 +211,77 @@ end
 
 """
 ```julia
+getparticlestatedata!(particledata, statename)
+```
+
+Get the state data for a specific state
+
+# Arguments:
+
+  - `statedata::Dict`:   input dictionary of particle state data arrays
+  - `statename::String`: name of the state data to retrieve
+
+# Returns:
+
+  - `StateData` for the requested state
+
+# Example:
+
+```jldoctest
+# setup
+typeinfo = []
+stateinfo = []
+statedata = Dict()
+
+# add first type
+addparticletype!("foo", 3, typeinfo)
+
+# add new states
+addparticlestate!("baz", 2, stateinfo)
+addparticlestate!("quux", 3, stateinfo)
+
+# add particle state data
+# -- add states for first type, don't allocate memory
+addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
+
+# add new type
+addparticletype!("bar", 4, typeinfo)
+
+# add more particle state data
+# -- add state for second type, allocate memory
+addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+
+# verify
+@assert length(statedata["baz"]) == 2
+@assert length(statedata["quux"]) == 1
+
+# get state data
+baz = getparticlestatedata(statedata, "baz")
+quux = getparticlestatedata(statedata, "quux")
+nix = getparticlestatedata(statedata, "nix")
+
+# verify
+@assert length(baz) == 2
+@assert length(baz[1]) == 0
+@assert length(baz[2]) == 8
+@assert length(quux) == 1
+@assert length(quux[1]) == 0
+@assert length(nix) == 0
+
+# output
+
+```
+"""
+function getparticlestatedata(statedata::Dict, statename::String)
+    if haskey(statedata, statename)
+        return statedata[statename]
+    else
+        return StateData{0,PulvisVector{Float64}}()
+    end
+end
+
+"""
+```julia
 squareparticlestatedata!(typeinfo, particledata)
 ```
 
@@ -295,131 +366,6 @@ function squareparticlestatedata!(typeinfo::Array, stateinfo::Array, statedata::
             )
         end
     end
-    return nothing
-end
-
-"""
-```julia
-removeparticles!(typename, particleids, typeinfo, stateinfo, particledata)
-```
-
-Remove particles by local id numbers
-
-# Arguments:
-
-  - `typename::String`:   name of particle type to remove particles for
-  - `particleids::Array`: input array of particle local id numbers for particles to remove
-  - `typeinfo::Array`:    input array of particle type information
-  - `stateinfo::Array`:   input array of particle state information
-  - `statedata::Dict`:    input/output dictionary of particle state data arrays
-
-# Returns:
-
-  - none
-
-# Example:
-
-```jldoctest
-# setup
-typeinfo = []
-stateinfo = []
-statedata = Dict()
-
-# add particle types
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 4, typeinfo)
-
-# add particle states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
-
-# add particle state data
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
-
-# square off state arrays
-squareparticlestatedata!(typeinfo, stateinfo, statedata)
-
-# verify
-@assert typeinfo[1].count == 3
-# note that allocated lengths should not decrease
-@assert length(statedata["quux"][1]) == 9
-@assert length(statedata["baz"][1]) == 6
-
-# remove particles
-removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
-
-# verify
-@assert typeinfo[1].count == 1
-# note that allocated lengths should not decrease
-@assert length(statedata["quux"][1]) == 9
-@assert length(statedata["baz"][1]) == 6
-
-# verify
-@assert typeinfo[2].count == 4
-# note that allocated lengths should not decrease
-@assert length(statedata["quux"][2]) == 0
-@assert length(statedata["baz"][2]) == 8
-
-# remove more particles
-removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
-
-# verify
-@assert typeinfo[2].count == 2
-# note that allocated lengths should not decrease
-@assert length(statedata["quux"][2]) == 0
-@assert length(statedata["baz"][2]) == 8
-
-# output
-
-```
-"""
-function removeparticles!(
-    typename::String,
-    particleids::Array,
-    typeinfo::Array,
-    stateinfo::Array,
-    statedata::Dict,
-)
-    typelength = length(typeinfo)
-    typeindex = findfirst(t -> t.name == typename, typeinfo)
-    @assert typeindex != nothing "Type not known"
-    sort(particleids, rev = true)
-
-    # Loop over all states
-    for i = 1:length(stateinfo)
-        newstatedata = []
-        resize!(newstatedata, typelength)
-
-        # Copy current pointers
-        for j = 1:(typeindex-1)
-            newstatedata[j] = statedata[stateinfo[i].name][j]
-        end
-        # Drop the target particles in the target type
-        data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
-        numparticles = typeinfo[typeindex].count
-        for id in particleids
-            if id < length(data)
-                for j =
-                        (id*stateinfo[i].dimension):((numparticles-1)*stateinfo[i].dimension)
-
-                    data[j] = data[j+stateinfo[i].dimension]
-                end
-            end
-            numparticles -= 1
-        end
-        newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
-        # Copy the rest of the current pointers
-        for j = (typeindex+1):typelength
-            newstatedata[j] = statedata[stateinfo[i].name][j]
-        end
-        # And copy to execution space
-        statedata[stateinfo[i].name] =
-            adapt(PulvisVector, StateData{typelength,PulvisVector{Float64}}(newstatedata))
-    end
-    # Finally decrease particle count
-    typeinfo[typeindex] =
-        TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count - length(particleids))
     return nothing
 end
 
@@ -565,5 +511,130 @@ function addparticles!(
     # Finally increase particle count
     typeinfo[typeindex] =
         TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count + numparticles)
+    return nothing
+end
+
+"""
+```julia
+removeparticles!(typename, particleids, typeinfo, stateinfo, particledata)
+```
+
+Remove particles by local id numbers
+
+# Arguments:
+
+  - `typename::String`:   name of particle type to remove particles for
+  - `particleids::Array`: input array of particle local id numbers for particles to remove
+  - `typeinfo::Array`:    input array of particle type information
+  - `stateinfo::Array`:   input array of particle state information
+  - `statedata::Dict`:    input/output dictionary of particle state data arrays
+
+# Returns:
+
+  - none
+
+# Example:
+
+```jldoctest
+# setup
+typeinfo = []
+stateinfo = []
+statedata = Dict()
+
+# add particle types
+addparticletype!("foo", 3, typeinfo)
+addparticletype!("bar", 4, typeinfo)
+
+# add particle states
+addparticlestate!("baz", 2, stateinfo)
+addparticlestate!("quux", 3, stateinfo)
+
+# add particle state data
+addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+
+# square off state arrays
+squareparticlestatedata!(typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[1].count == 3
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][1]) == 9
+@assert length(statedata["baz"][1]) == 6
+
+# remove particles
+removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[1].count == 1
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][1]) == 9
+@assert length(statedata["baz"][1]) == 6
+
+# verify
+@assert typeinfo[2].count == 4
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][2]) == 0
+@assert length(statedata["baz"][2]) == 8
+
+# remove more particles
+removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[2].count == 2
+# note that allocated lengths should not decrease
+@assert length(statedata["quux"][2]) == 0
+@assert length(statedata["baz"][2]) == 8
+
+# output
+
+```
+"""
+function removeparticles!(
+    typename::String,
+    particleids::Array,
+    typeinfo::Array,
+    stateinfo::Array,
+    statedata::Dict,
+)
+    typelength = length(typeinfo)
+    typeindex = findfirst(t -> t.name == typename, typeinfo)
+    @assert typeindex != nothing "Type not known"
+    sort(particleids, rev = true)
+
+    # Loop over all states
+    for i = 1:length(stateinfo)
+        newstatedata = []
+        resize!(newstatedata, typelength)
+
+        # Copy current pointers
+        for j = 1:(typeindex-1)
+            newstatedata[j] = statedata[stateinfo[i].name][j]
+        end
+        # Drop the target particles in the target type
+        data = adapt(Vector{Float64}, statedata[stateinfo[i].name][typeindex])
+        numparticles = typeinfo[typeindex].count
+        for id in particleids
+            if id < length(data)
+                for j =
+                        (id*stateinfo[i].dimension):((numparticles-1)*stateinfo[i].dimension)
+
+                    data[j] = data[j+stateinfo[i].dimension]
+                end
+            end
+            numparticles -= 1
+        end
+        newstatedata[typeindex] = adapt(PulvisVector{Float64}, data)
+        # Copy the rest of the current pointers
+        for j = (typeindex+1):typelength
+            newstatedata[j] = statedata[stateinfo[i].name][j]
+        end
+        # And copy to execution space
+        statedata[stateinfo[i].name] =
+            adapt(PulvisVector, StateData{typelength,PulvisVector{Float64}}(newstatedata))
+    end
+    # Finally decrease particle count
+    typeinfo[typeindex] =
+        TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count - length(particleids))
     return nothing
 end

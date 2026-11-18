@@ -2,15 +2,44 @@
 # Time step hooks
 # ------------------------------------------------------------------------------
 
-function pretimestep(time, typeinfo::Array, stateinfo::Array, statedata::Dict)
+function pretimestep(
+    particleids::Array{Int},
+    typeids::Array{Int},
+    neighborindexes::Array{Int},
+    bininfo::BinInfo,
+    dimension::Int,
+    time::PulvisScalar,
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
+    statedata::Dict,
+)
     # Boundaries
-    perscribeopenboundarystates(time, typeinfo, stateinfo, statedata)
+    perscribeopenboundarystates!(time, typeinfo, stateinfo, statedata)
+
+    # Get state data
+    r = getparticlestatedata(statedata, "position")
+    radius = getparticlestatedata(statedata, "radius")
+
+    # Build pair list
+    buildpairlist!(
+        typeinfo,
+        bininfo,
+        dimension,
+        r,
+        radius,
+        particleids,
+        typeids,
+        nighborindexes,
+    )
 end
 
 function evaluatetimestep(
+    particleids::Array{Int},
+    typeids::Array{Int},
+    neighborindexes::Array{Int},
     dimension::Int,
-    typeinfo::Array,
-    stateinfo::Array,
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
     statedata::Dict,
 )
     # Get state data
@@ -23,9 +52,6 @@ function evaluatetimestep(
     a = getparticlestatedata(statedata, "acceleration")
     v_modified = getparticlestatedata(statedata, "modified velocity")
     a_modified = getparticlestatedata(statedata, "modified acceleration")
-
-    # Build pair list
-    buildpairlist!(particleids, typeids, dimension, r, radius, nighborindexes)
 
     # Compute density field
     computedensity!(particleids, typeids, neighborindexes, dimension, r, radius, m, ρ)

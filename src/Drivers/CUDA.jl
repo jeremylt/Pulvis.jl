@@ -11,7 +11,7 @@ Compute the density of a single particle on a single GPU thread
 
 # Arguments:
 
-  - `particleids::Array`:     input array of particle ids by type
+  - `particleids::Array`:     input array of local particle ids by type
   - `typeids::Array`:         input array of particle type ids
   - `neighborindexes::Array`: input array of neighbor particle global indexes
   - `dimension::Int`:         spatial dimension of problem
@@ -65,7 +65,7 @@ Compute the density of all particles on the GPU
 
 # Arguments:
 
-  - `particleids::Array`:     input array of particle ids by type
+  - `particleids::Array`:     input array of local particle ids by type
   - `typeids::Array`:         input array of particle type ids
   - `neighborindexes::Array`: input array of neighbor particle global indexes
   - `dimension::Int`:         spatial dimension of problem
@@ -114,7 +114,7 @@ Compute the pressure for single particle on a single GPU thread
 
 # Arguments:
 
-  - `particleids::Array`:      input array of particle ids by type
+  - `particleids::Array`:      input array of local particle ids by type
   - `typeids::Array`:          input array of particle type ids
   - `ρ::StateData`:            input arrays of particle densities by particle type and id
   - `ρ0::Array`:               input array of initial densities by particle type
@@ -163,7 +163,7 @@ Compute the pressure for all particles on the GPU
 
 # Arguments:
 
-  - `particleids::Array{Int}`:               input array of particle ids by type
+  - `particleids::Array{Int}`:               input array of local particle ids by type
   - `typeids::Array{Int}`:                   input array of particle type ids
   - `ρ::StateData`:                          input arrays of particle densities by particle type and id
   - `ρ0::Array{PulvisScalar}`:               input array of initial densities by particle type
@@ -228,7 +228,7 @@ Compute the forces for a single particle on a single GPU thread
 
 # Arguments:
 
-  - `particleids::Array{Int}`:        input array of particle ids by type
+  - `particleids::Array{Int}`:        input array of local particle ids by type
   - `typeids::Array{Int}`:            input array of particle type ids
   - `neighborindexes::Array{Int}`:    input array of neighbor particle global indexes
   - `μ_dynamic::Array{PulvisScalar}`: input array of dynamic viscosity by particle type
@@ -314,7 +314,7 @@ Compute the forces for all particles on the GPU
 
 # Arguments:
 
-  - `particleids::Array{Int}`:        input array of particle ids by type
+  - `particleids::Array{Int}`:        input array of local particle ids by type
   - `typeids::Array{Int}`:            input array of particle type ids
   - `neighborindexes::Array{Int}`:    input array of neighbor particle global indexes
   - `μ_dynamic::Array{PulvisScalar}`: input array of dynamic viscosity by particle type

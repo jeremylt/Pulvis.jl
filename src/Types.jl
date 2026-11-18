@@ -19,6 +19,6 @@ end
 struct BinInfo
     lower::Array{PulvisScalar}
     upper::Array{PulvisScalar}
-    binwidth::PulvisScalar
-    numbins::Array{Int}
+    width::PulvisScalar
+    counts::Array{Int}
 end

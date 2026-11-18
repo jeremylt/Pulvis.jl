@@ -11,11 +11,11 @@ Convert density to pressure
 
 # Arguments:
 
-  - `ρ::Float`:                particle density
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `ρ::PulvisScalar`:                particle density
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -38,7 +38,13 @@ c = 3.5
 
 ```
 """
-function densitytopressure_IdealGas(ρ, ρ0, c, refdensityfactor, exponent::Int)
+function densitytopressure_IdealGas(
+    ρ::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     return c^2 * ρ
 end
 
@@ -51,11 +57,11 @@ Convert pressure to density
 
 # Arguments:
 
-  - `p::Float`:                particle pressure
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `p::PulvisScalar`:                particle pressure
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -79,7 +85,13 @@ p = 1.8
 
 ```
 """
-function pressuretodensity_IdealGas(p, ρ0, c, refdensityfactor, exponent::Int)
+function pressuretodensity_IdealGas(
+    p::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     return p / c^2
 end
 
@@ -92,12 +104,12 @@ Convert density to energy
 
 # Arguments:
 
-  - `ρ::Float`:                particle density
-  - `m::Float`:                particle mass
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `ρ::PulvisScalar`:                particle density
+  - `m::PulvisScalar`:                particle mass
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -122,6 +134,13 @@ m = 1.3
 
 ```
 """
-function densitytoenergy_IdealGas(ρ, m, ρ0, c, refdensityfactor, exponent::Int)
+function densitytoenergy_IdealGas(
+    ρ::PulvisScalar,
+    m::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     return -c^2 * m * log(m^2 / (ρ0 * ρ))
 end

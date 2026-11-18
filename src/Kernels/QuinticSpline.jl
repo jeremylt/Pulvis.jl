@@ -11,7 +11,7 @@ Compute the smoothing length of the kernel
 
 # Arguments:
 
-  - `support::Array`: support radius
+  - `support::PulvisScalar`: support radius
 
 # Returns:
 
@@ -34,7 +34,7 @@ h = support / 3.0
 
 ```
 """
-function smoothinglength_QuinticSpline(support)
+function smoothinglength_QuinticSpline(support::PulvisScalar)
     # support / 3.0
     return 0.3333333333333333 * support
 end
@@ -48,8 +48,8 @@ Compute the normalization constant of the kernel
 
 # Arguments:
 
-  - `h_inv::Float`:   inverse of the support radius
-  - `dimension::Int`: spatial dimension
+  - `h_inv::PulvisScalar`: inverse of the support radius
+  - `dimension::Int`:      spatial dimension
 
 # Returns:
 
@@ -83,7 +83,7 @@ dimension = 3
 
 ```
 """
-function normalizationconstant_QuinticSpline(h_inv, dimension)
+function normalizationconstant_QuinticSpline(h_inv::PulvisScalar, dimension::Int)
     if dimension == 1
         # h_inv / 120.0
         return 0.0083333333333333 * h_inv
@@ -105,8 +105,8 @@ Compute the kernel self interaction
 
 # Arguments:
 
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -140,7 +140,7 @@ dimension = 3
 
 ```
 """
-function w0_QuinticSpline(support, dimension)
+function w0_QuinticSpline(support::PulvisScalar, dimension::Int)
     return 66.0 * normalizationconstant_QuinticSpline(3.0 / support, dimension)
 end
 
@@ -153,9 +153,9 @@ Compute the kernel interaction
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -231,7 +231,7 @@ dimension = 3
 
 ```
 """
-function w_QuinticSpline(r_ij, support, dimension)
+function w_QuinticSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 3.0 / support
     q = r_ij * h_inv
 
@@ -257,9 +257,9 @@ Compute the first derivative of the kernel
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -335,7 +335,7 @@ dimension = 3
 
 ```
 """
-function dwdrij_QuinticSpline(r_ij, support, dimension)
+function dwdrij_QuinticSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 3.0 / support
     q = r_ij * h_inv
 
@@ -366,9 +366,9 @@ Compute the second derivative of the kernel
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -445,7 +445,7 @@ dimension = 3
 
 ```
 """
-function d2wdrij2_QuinticSpline(r_ij, support, dimension)
+function d2wdrij2_QuinticSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 3.0 / support
     q = r_ij * h_inv
 

@@ -2,9 +2,9 @@
 # Particle data
 # ------------------------------------------------------------------------------
 
-typeinfo = []
-stateinfo = []
-statedata = Dict()
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
+statedata::Dict = Dict()
 
 """
 ```julia
@@ -15,9 +15,9 @@ Add a particle type name
 
 # Arguments:
 
-  - `name::String`:    name of new particle type
-  - `count::Int`:      number of particles by type
-  - `typeinfo::Array`: input/output array of particle type information
+  - `name::String`:              name of new particle type
+  - `count::Int`:                number of particles by type
+  - `typeinfo::Array{TypeInfo}`: input/output array of particle type information
 
 # Returns:
 
@@ -27,7 +27,7 @@ Add a particle type name
 
 ```jldoctest
 # setup
-typeinfo = []
+typeinfo::Array{TypeInfo} = []
 
 # add new type
 addparticletype!("foo", 3, typeinfo)
@@ -47,7 +47,7 @@ addparticletype!("bar", 4, typeinfo)
 
 ```
 """
-function addparticletype!(name::String, count::Int, typeinfo::Array)
+function addparticletype!(name::String, count::Int, typeinfo::Array{TypeInfo})
     @assert findfirst(t -> t.name == name, typeinfo) == nothing "Types must have unique names"
     push!(typeinfo, TypeInfo(name, count))
     return nothing
@@ -62,9 +62,9 @@ Add a particle state name and dimension
 
 # Arguments:
 
-  - `name::String`:     name of new particle state
-  - `dimension::Int`:   dimension of new particle state
-  - `stateinfo::Array`: input/output array of particle state information
+  - `name::String`:                name of new particle state
+  - `dimension::Int`:              dimension of new particle state
+  - `stateinfo::Array{StateInfo}`: input/output array of particle state information
 
 # Returns:
 
@@ -74,7 +74,7 @@ Add a particle state name and dimension
 
 ```jldoctest
 # setup
-stateinfo = []
+stateinfo::Array{StateInfo} = []
 
 # add new state
 addparticlestate!("baz", 2, stateinfo)
@@ -94,7 +94,7 @@ addparticlestate!("quux", 3, stateinfo)
 
 ```
 """
-function addparticlestate!(name::String, dimension::Int, stateinfo::Array)
+function addparticlestate!(name::String, dimension::Int, stateinfo::Array{StateInfo})
     @assert findfirst(s -> s.name == name, stateinfo) == nothing "States must have unique names"
     push!(stateinfo, StateInfo(name, dimension))
     return nothing
@@ -109,12 +109,12 @@ Add new particle state arrays for particle type
 
 # Arguments:
 
-  - `typename::String`:  name of particle type to add state data for
-  - `typeinfo::Array`:   input array of particle type information
-  - `statenames::Array`: input array of names of particle states to add
-  - `stateinfo::Array`:  input array of particle state information
-  - `statedata::Dict`:   input/output dictionary of particle state data arrays
-  - `initialize::Bool`:  flag to initialize state data array (default True)
+  - `typename::String`:            name of particle type to add state data for
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `statenames::Array{String}`:   input array of names of particle states to add
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
+  - `initialize::Bool`:            flag to initialize state data array (default True)
 
 # Returns:
 
@@ -124,8 +124,8 @@ Add new particle state arrays for particle type
 
 ```jldoctest
 # setup
-typeinfo = []
-stateinfo = []
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add new types
@@ -162,9 +162,9 @@ addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, fa
 """
 function addparticlestatedata!(
     typename::String,
-    typeinfo::Array,
-    statenames::Array,
-    stateinfo::Array,
+    typeinfo::Array{StateInfo},
+    statenames::Array{String},
+    stateinfo::Array{StateInfo},
     statedata::Dict,
     initialize::Bool = true,
 )
@@ -229,8 +229,8 @@ Get the state data for a specific state
 
 ```jldoctest
 # setup
-typeinfo = []
-stateinfo = []
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add first type
@@ -289,9 +289,9 @@ Ensure all state data arrays have the same length
 
 # Arguments:
 
-  - `typeinfo::Array`:  input array of particle type information
-  - `stateinfo::Array`: input array of particle state information
-  - `statedata::Dict`:  input/output dictionary of particle state data arrays
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
 
 # Returns:
 
@@ -338,7 +338,11 @@ squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 ```
 """
-function squareparticlestatedata!(typeinfo::Array, stateinfo::Array, statedata::Dict)
+function squareparticlestatedata!(
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
+    statedata::Dict,
+)
     typelength = length(typeinfo)
 
     # Check all states
@@ -378,12 +382,12 @@ Add new particle state arrays for particle type
 
 # Arguments:
 
-  - `typename::String`:  name of particle type to remove particles for
-  - `numparticles::Int`: number of new particles to add
-  - `newdata::Dict`:     input dictionary of new particle state data arrays
-  - `typeinfo::Array`:   input array of particle type information
-  - `stateinfo::Array`:  input array of particle state information
-  - `statedata::Dict`:   input/output dictionary of particle state data arrays
+  - `typename::String`:            name of particle type to remove particles for
+  - `numparticles::Int`:           number of new particles to add
+  - `newdata::Dict`:               input dictionary of new particle state data arrays
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
 
 # Returns:
 
@@ -393,8 +397,8 @@ Add new particle state arrays for particle type
 
 ```jldoctest
 # setup
-typeinfo = []
-stateinfo = []
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add particle types
@@ -454,8 +458,8 @@ function addparticles!(
     typename::String,
     numparticles::Int,
     newdata::Dict,
-    typeinfo::Array,
-    stateinfo::Array,
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
     statedata::Dict,
 )
     typelength = length(typeinfo)
@@ -523,11 +527,11 @@ Remove particles by local id numbers
 
 # Arguments:
 
-  - `typename::String`:   name of particle type to remove particles for
-  - `particleids::Array`: input array of particle local id numbers for particles to remove
-  - `typeinfo::Array`:    input array of particle type information
-  - `stateinfo::Array`:   input array of particle state information
-  - `statedata::Dict`:    input/output dictionary of particle state data arrays
+  - `typename::String`:            name of particle type to remove particles for
+  - `particleids::Array{Int}`:     input array of particle local id numbers for particles to remove
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
 
 # Returns:
 
@@ -537,8 +541,8 @@ Remove particles by local id numbers
 
 ```jldoctest
 # setup
-typeinfo = []
-stateinfo = []
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add particle types
@@ -592,9 +596,9 @@ removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
 """
 function removeparticles!(
     typename::String,
-    particleids::Array,
-    typeinfo::Array,
-    stateinfo::Array,
+    particleids::Array{Int},
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
     statedata::Dict,
 )
     typelength = length(typeinfo)

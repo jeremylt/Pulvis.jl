@@ -7,11 +7,11 @@ Compute the specific coefficient
 
 # Arguments:
 
-  - `ρ_i::Float`:     density of first particle
-  - `ρ_j::Float`:     density of second particle
-  - `m_i::Float`:     mass of first particle
-  - `m_j::Float`:     mass of second particle
-  - `dWdr_ij::Float`: first derivative of the kernel
+  - `ρ_i::PulvisScalar`:     density of first particle
+  - `ρ_j::PulvisScalar`:     density of second particle
+  - `m_i::PulvisScalar`:     mass of first particle
+  - `m_j::PulvisScalar`:     mass of second particle
+  - `dWdr_ij::PulvisScalar`: first derivative of the kernel
 
 # Returns:
 
@@ -40,7 +40,13 @@ speccoeff = specificcoefficient(ρ_i, ρ_j, m_i, m_j, dWdr_ij)
 
 ```
 """
-function specificcoefficient_Monagahn(ρ_i, ρ_j, m_i, m_j, dWdr_ij)
+function specificcoefficient_Monagahn(
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    m_i::PulvisScalar,
+    m_j::PulvisScalar,
+    dWdr_ij::PulvisScalar,
+)
     return dWdr_ij * m_i
 end
 
@@ -53,13 +59,13 @@ Compute the pressure gradient
 
 # Arguments:
 
-  - `ρ_i::Float`:       density of first particle
-  - `ρ_j::Float`:       density of second particle
-  - `p_i::Float`:       pressure of first particle
-  - `p_j::Float`:       pressure of second particle
-  - `speccoeff::Float`: specific coefficient
-  - `e_ij::Array`:      normalized vector between particles
-  - `a::Array`:         output acceleration array to sum in the pressure gradient
+  - `ρ_i::PulvisScalar`:         density of first particle
+  - `ρ_j::PulvisScalar`:         density of second particle
+  - `p_i::PulvisScalar`:         pressure of first particle
+  - `p_j::PulvisScalar`:         pressure of second particle
+  - `speccoeff::PulvisScalar`:   specific coefficient
+  - `e_ij::Array{PulvisScalar}`: normalized vector between particles
+  - `a::Array{PulvisScalar}`:    output acceleration array to sum in the pressure gradient
 
 # Returns:
 
@@ -91,13 +97,13 @@ pressuregradient!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
 ```
 """
 function pressuregradient_Monagahn!(
-    ρ_i,
-    ρ_j,
-    p_i,
-    p_j,
-    speccoeff,
-    e_ij::AbstractArray,
-    a::AbstractArray,
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    p_i::PulvisScalar,
+    p_j::PulvisScalar,
+    speccoeff::PulvisScalar,
+    e_ij::AbstractArray{PulvisScalar},
+    a::AbstractArray{PulvisScalar},
 )
     a .+= -(p_i / ρ_i^2 + p_j / ρ_j^2) * speccoeff * e_ij
     return nothing
@@ -126,18 +132,18 @@ Compute the shear forces
 
 # Arguments:
 
-  - `ρ_i::Float`:       density of first particle
-  - `ρ_j::Float`:       density of second particle
-  - `v_i::Array`:       velocity of first particle
-  - `v_j::Array`:       velocity of second particle
-  - `μ_i::Float`:       dynamic viscosity of first particle
-  - `μ_j::Float`:       dynamic viscosity of second particle
-  - `μ_bulk_i::Float`:  bulk viscosity of first particle
-  - `μ_bulk_j::Float`:  bulk viscosity of second particle
-  - `absdist::Float`:   absolute distance between particles
-  - `speccoeff::Float`: specific coefficient
-  - `e_ij::Array`:      normalized vector between particles
-  - `a::Array`:         output acceleration array to sum in the shear forces
+  - `ρ_i::PulvisScalar`:         density of first particle
+  - `ρ_j::PulvisScalar`:         density of second particle
+  - `v_i::Array{PulvisScalar}`:  velocity of first particle
+  - `v_j::Array{PulvisScalar}`:  velocity of second particle
+  - `μ_i::PulvisScalar`:         dynamic viscosity of first particle
+  - `μ_j::PulvisScalar`:         dynamic viscosity of second particle
+  - `μ_bulk_i::PulvisScalar`:    bulk viscosity of first particle
+  - `μ_bulk_j::PulvisScalar`:    bulk viscosity of second particle
+  - `absdist::PulvisScalar`:     absolute distance between particles
+  - `speccoeff::PulvisScalar`:   specific coefficient
+  - `e_ij::Array{PulvisScalar}`: normalized vector between particles
+  - `a::Array{PulvisScalar}`:    output acceleration array to sum in the shear forces
 
 # Returns:
 
@@ -202,19 +208,19 @@ convection_coeff = kernelfac * (μ_bulk + μ_scaled)
 ```
 """
 function shearforces_Monagahn!(
-    ρ_i,
-    ρ_j,
-    v_i::AbstractArray,
-    v_j::AbstractArray,
-    kernelfac,
-    μ_i,
-    μ_j,
-    μ_bulk_i,
-    μ_bulk_j,
-    absdist,
-    speccoeff,
-    e_ij::AbstractArray,
-    a::AbstractArray,
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    v_i::AbstractArray{PulvisScalar},
+    v_j::AbstractArray{PulvisScalar},
+    kernelfac::PulvisScalar,
+    μ_i::PulvisScalar,
+    μ_j::PulvisScalar,
+    μ_bulk_i::PulvisScalar,
+    μ_bulk_j::PulvisScalar,
+    absdist::PulvisScalar,
+    speccoeff::PulvisScalar,
+    e_ij::AbstractArray{PulvisScalar},
+    a::AbstractArray{PulvisScalar},
 )
     μ_scaled = (μ_i > 0.0 && μ_j > 0.0) ? (2.0 * μ_i * μ_j / (3.0 * (μ_i + μ_j))) : 0.0
     μ_bulk =
@@ -242,12 +248,12 @@ Compute the background pressure forces
 
 # Arguments:
 
-  - `ρ_i::Float`:          density of first particle
-  - `ρ_j::Float`:          density of second particle
-  - `p_background::Float`: background pressure
-  - `speccoeff::Float`:    specific coefficient
-  - `e_ij::Array`:         normalized vector between particles
-  - `a_modified::Array`:   output modified acceleration array to sum in the background pressure forces
+  - `ρ_i::PulvisScalar`:               density of first particle
+  - `ρ_j::PulvisScalar`:               density of second particle
+  - `p_background::PulvisScalar`:      background pressure
+  - `speccoeff::PulvisScalar`:         specific coefficient
+  - `e_ij::Array{PulvisScalar}`:       normalized vector between particles
+  - `a_modified::Array{PulvisScalar}`: output modified acceleration array to sum in the background pressure forces
 
 # Returns:
 
@@ -279,12 +285,12 @@ standardbackgroundpressure!(ρ_i, ρ_j, p_background, speccoeff, e_ij, a_modifie
 ```
 """
 function standardbackgroundpressure_Monagahn!(
-    ρ_i,
-    ρ_j,
-    p_background,
-    speccoeff,
-    e_ij::AbstractArray,
-    a_modified::AbstractArray,
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    p_background::PulvisScalar,
+    speccoeff::PulvisScalar,
+    e_ij::AbstractArray{PulvisScalar},
+    a_modified::AbstractArray{PulvisScalar},
 )
     a_modified .+= -speccoeff * p_background * (1.0 / ρ_i^2 + 1.0 / ρ_j^2) * e_ij
     return nothing
@@ -308,14 +314,14 @@ Compute the generalized background pressure forces
 
 # Arguments:
 
-  - `ρ_i::Float`:              density of first particle
-  - `ρ_j::Float`:              density of second particle
-  - `m_i::Float`:              mass of first particle
-  - `m_j::Float`:              mass of second particle
-  - `p_background_mod::Float`: modified background pressure
-  - `dWdr_ij_mod::Float`:      modified derivative of kernel factor
-  - `e_ij::Array`:             normalized vector between particles
-  - `a_modified::Array`:       output modified acceleration array to sum in the background pressure forces
+  - `ρ_i::PulvisScalar`:               density of first particle
+  - `ρ_j::PulvisScalar`:               density of second particle
+  - `m_i::PulvisScalar`:               mass of first particle
+  - `m_j::PulvisScalar`:               mass of second particle
+  - `p_background_mod::PulvisScalar`:  modified background pressure
+  - `dWdr_ij_mod::PulvisScalar`:       modified derivative of kernel factor
+  - `e_ij::Array{PulvisScalar}`:       normalized vector between particles
+  - `a_modified::Array{PulvisScalar}`: output modified acceleration array to sum in the background pressure forces
 
 # Returns:
 
@@ -357,14 +363,14 @@ generalizedbackgroundpressure!(
 ```
 """
 function generalizedbackgroundpressure_Monagahn!(
-    ρ_i,
-    ρ_j,
-    m_i,
-    m_j,
-    p_background_mod,
-    dWdr_ij_mod,
-    e_ij::AbstractArray,
-    a_modified::AbstractArray,
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    m_i::PulvisScalar,
+    m_j::PulvisScalar,
+    p_background_mod::PulvisScalar,
+    dWdr_ij_mod::PulvisScalar,
+    e_ij::AbstractArray{PulvisScalar},
+    a_modified::AbstractArray{PulvisScalar},
 )
     a_modified .+= -p_background_mod * m_j / ρ_i^2 * dWdr_ij_mod * e_ij
     return nothing
@@ -389,15 +395,15 @@ Compute the modified velocity force contribution
 
 # Arguments:
 
-  - `ρ_i::Float`:          density of first particle
-  - `ρ_j::Float`:          density of second particle
-  - `v_i::Array`:          velocity of first particle
-  - `v_j::Array`:          velocity of second particle
-  - `speccoeff::Float`:    specific coefficient
-  - `e_ij::Array`:         normalized vector between particles
-  - `a_modified::Array`:   output modified acceleration array to sum in the background pressure forces
-  - `v_modified_i::Array`: modified velocity of first particle, optional
-  - `v_modified_j::Array`: modified velocity of second particle, optional
+  - `ρ_i::PulvisScalar`:                 density of first particle
+  - `ρ_j::PulvisScalar`:                 density of second particle
+  - `v_i::Array{PulvisScalar}`:          velocity of first particle
+  - `v_j::Array{PulvisScalar}`:          velocity of second particle
+  - `speccoeff::PulvisScalar`:           specific coefficient
+  - `e_ij::Array{PulvisScalar}`:         normalized vector between particles
+  - `a_modified::Array{PulvisScalar}`:   output modified acceleration array to sum in the background pressure forces
+  - `v_modified_i::Array{PulvisScalar}`: modified velocity of first particle, optional
+  - `v_modified_j::Array{PulvisScalar}`: modified velocity of second particle, optional
 
 # Returns:
 
@@ -458,13 +464,13 @@ modifiedvelocitycontribution!(ρ_i, ρ_j, v_i, v_j, speccoeff, e_ij, a_modified)
 ```
 """
 function modifiedvelocitycontribution_Monagahn!(
-    ρ_i,
-    ρ_j,
-    v_i::AbstractArray,
-    v_j::AbstractArray,
-    speccoeff,
-    e_ij::AbstractArray,
-    a_modified::AbstractArray;
+    ρ_i::PulvisScalar,
+    ρ_j::PulvisScalar,
+    v_i::AbstractArray{PulvisScalar},
+    v_j::AbstractArray{PulvisScalar},
+    speccoeff::PulvisScalar,
+    e_ij::AbstractArray{PulvisScalar},
+    a_modified::AbstractArray{PulvisScalar};
     v_modified_i = nothing,
     v_modified_j = nothing,
 )

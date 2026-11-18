@@ -7,10 +7,12 @@ function pretimestep(time, typeinfo::Array, stateinfo::Array, statedata::Dict)
     perscribeopenboundarystates(time, typeinfo, stateinfo, statedata)
 end
 
-function evaluatetimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)
-    # Setup for time step
-    buildpairlist!()
-
+function evaluatetimestep(
+    dimension::Int,
+    typeinfo::Array,
+    stateinfo::Array,
+    statedata::Dict,
+)
     # Get state data
     r = getparticlestatedata(statedata, "position")
     radius = getparticlestatedata(statedata, "radius")
@@ -22,8 +24,11 @@ function evaluatetimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)
     v_modified = getparticlestatedata(statedata, "modified velocity")
     a_modified = getparticlestatedata(statedata, "modified acceleration")
 
+    # Build pair list
+    buildpairlist!(particleids, typeids, dimension, r, radius, nighborindexes)
+
     # Compute density field
-    computedensity!(particleids, typeids, neighboridexes, dimension, r, radius, m, ρ)
+    computedensity!(particleids, typeids, neighborindexes, dimension, r, radius, m, ρ)
 
     # Convert from density to pressure
     computepressure!(particleids, typeids, ρ, ρ0, c, refdensityfactor, exponent, p)
@@ -54,5 +59,5 @@ function posttimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)
     evaluatephasechange(time, typeinfo, stateinfo, statedata)
 
     # Peridynamics
-    evaluatedamage(time, typeinfo, stateinfo, statedata)
+    # evaluatedamage(time, typeinfo, stateinfo, statedata)
 end

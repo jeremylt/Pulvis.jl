@@ -28,22 +28,22 @@ Sum the momentum contributions to the particle from neighbor particles
 
 # Arguments:
 
-  - `particleindex::Int`:     global index number of current particle
-  - `particleids::Array`:     input array of particle ids by type
-  - `neighborindexes::Array`: input array of neighbor particle global indexes
-  - `typeids::Array`:         input array of particle type ids
-  - `μ_dynamic::Array`        input array of dynamic viscosity for each particle type
-  - `μ_bulk::Array`           input array of bulk viscosity for each particle type
-  - `dimension::Int`:         spatial dimension of problem
-  - `r::StateData`:           input arrays of particle positions by particle type and id
-  - `radius::StateData`:      input arrays of particle radi by particle type and id
-  - `m::StateData`:           input arrays of particle masses by particle type and id
-  - `ρ::StateData`:           input arrays of particle densities by particle type and id
-  - `p::StateData`:           input arrays of particle pressures by particle type and id
-  - `v::StateData`:           input arrays of particle velocities by particle type and id
-  - `a::StateData`:           output arrays of particle acceleration by particle type and id
-  - `v_modified::StateData`:  output arrays of modified particle velocities by particle type and id
-  - `a_modified::StateData`:  output arrays of modified particle acceleration by particle type and id
+  - `particleindex::Int`:             global index number of current particle
+  - `particleids::Array{Int}`:        input array of particle ids by type
+  - `neighborindexes::Array{Int}`:    input array of neighbor particle global indexes
+  - `typeids::Array{Int}`:            input array of particle type ids
+  - `μ_dynamic::Array{PulvisScalar}`: input array of dynamic viscosity for each particle type
+  - `μ_bulk::Array{PulvisScalar}`:    input array of bulk viscosity for each particle type
+  - `dimension::Int`:                 spatial dimension of problem
+  - `r::StateData`:                   input arrays of particle positions by particle type and id
+  - `radius::StateData`:              input arrays of particle radi by particle type and id
+  - `m::StateData`:                   input arrays of particle masses by particle type and id
+  - `ρ::StateData`:                   input arrays of particle densities by particle type and id
+  - `p::StateData`:                   input arrays of particle pressures by particle type and id
+  - `v::StateData`:                   input arrays of particle velocities by particle type and id
+  - `a::StateData`:                   output arrays of particle acceleration by particle type and id
+  - `v_modified::StateData`:          output arrays of modified particle velocities by particle type and id
+  - `a_modified::StateData`:          output arrays of modified particle acceleration by particle type and id
 
 # Returns:
 
@@ -112,11 +112,11 @@ neighborindex = neighborindexes[4]
 """
 function momentumequationneighbors!(
     particleindex::Int,
-    particleids::Array,
-    typeids::Array,
-    neighborindexes::Array,
-    μ_dynamic::Array,
-    μ_bulk::Array,
+    particleids::Array{Int},
+    typeids::Array{Int},
+    neighborindexes::Array{Int},
+    μ_dynamic::Array{PulvisScalar},
+    μ_bulk::Array{PulvisScalar},
     dimension::Int,
     r::StateData,
     radius::StateData,

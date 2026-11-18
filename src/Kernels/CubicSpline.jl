@@ -13,7 +13,7 @@ Compute the smoothing length of the kernel
 
 # Arguments:
 
-  - `support::Array`: support radius
+  - `support::PulvisScalar`: support radius
 
 # Returns:
 
@@ -36,7 +36,7 @@ h = support / 2.0
 
 ```
 """
-function smoothinglength_CubicSpline(support)
+function smoothinglength_CubicSpline(support::PulvisScalar)
     # support / 2.0
     return 0.5 * support
 end
@@ -50,8 +50,8 @@ Compute the normalization constant of the kernel
 
 # Arguments:
 
-  - `h_inv::Float`:   inverse of the support radius
-  - `dimension::Int`: spatial dimension
+  - `h_inv::PulvisScalar`: inverse of the support radius
+  - `dimension::Int`:      spatial dimension
 
 # Returns:
 
@@ -85,7 +85,7 @@ dimension = 3
 
 ```
 """
-function normalizationconstant_CubicSpline(h_inv, dimension::Int)
+function normalizationconstant_CubicSpline(h_inv::PulvisScalar, dimension::Int)
     if dimension == 1
         # (2.0 / 3.0) * h_inv
         return 0.6666666666666666 * h_inv
@@ -107,8 +107,8 @@ Compute the kernel self interaction
 
 # Arguments:
 
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -142,7 +142,7 @@ dimension = 3
 
 ```
 """
-function w0_CubicSpline(support, dimension::Int)
+function w0_CubicSpline(support::PulvisScalar, dimension::Int)
     return normalizationconstant_CubicSpline(2.0 / support, dimension)
 end
 
@@ -155,9 +155,9 @@ Compute the kernel interaction
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -223,7 +223,7 @@ dimension = 3
 
 ```
 """
-function w_CubicSpline(r_ij, support, dimension::Int)
+function w_CubicSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 2.0 / support
     q = r_ij * h_inv
 
@@ -246,9 +246,9 @@ Compute the first derivative of the kernel
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -314,7 +314,7 @@ dimension = 3
 
 ```
 """
-function dwdrij_CubicSpline(r_ij, support, dimension::Int)
+function dwdrij_CubicSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 2.0 / support
     q = r_ij * h_inv
 
@@ -340,9 +340,9 @@ Compute the second derivative of the kernel
 
 # Arguments:
 
-  - `r_ij::Float`:    distance between the points
-  - `support::Float`: support radius
-  - `dimension::Int`: spatial dimension
+  - `r_ij::PulvisScalar`:    distance between the points
+  - `support::PulvisScalar`: support radius
+  - `dimension::Int`:        spatial dimension
 
 # Returns:
 
@@ -408,7 +408,7 @@ dimension = 3
 
 ```
 """
-function d2wdrij2_CubicSpline(r_ij, support, dimension::Int)
+function d2wdrij2_CubicSpline(r_ij::PulvisScalar, support::PulvisScalar, dimension::Int)
     h_inv = 2.0 / support
     q = r_ij * h_inv
 

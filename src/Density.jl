@@ -11,11 +11,11 @@ Compute the density of the particle from the shape function, radius, and mass
 
 # Arguments:
 
-  - `particleid::Int`: local id number of current particle
-  - `dimension::Int`:  spatial dimension of problem
-  - `radius::Array`:   input array of particle radi
-  - `m::Array`:        input array of particle masses
-  - `ρ::Array`:        output array of particle densities
+  - `particleid::Int`:             local id number of current particle
+  - `dimension::Int`:              spatial dimension of problem
+  - `radius::Array{PulvisScalar}`: input array of particle radi
+  - `m::Array{PulvisScalar}`:      input array of particle masses
+  - `ρ::Array{PulvisScalar}`:      output array of particle densities
 
 # Returns:
 
@@ -47,9 +47,9 @@ sumweightedmassself!(particleid, dimension, radius[1], m[1], ρ[1])
 function sumweightedmassself!(
     particleid::Int,
     dimension::Int,
-    radius::Array,
-    m::Array,
-    ρ::Array,
+    radius::Array{PulvisScalar},
+    m::Array{PulvisScalar},
+    ρ::Array{PulvisScalar},
 )
     ρ[particleid] = w0(radius[particleid], dimension) * m[particleid]
     return nothing
@@ -74,15 +74,15 @@ Sum the density contributions to the particle from neighbor particles
 
 # Arguments:
 
-  - `particleindex::Int`:     global index number of current particle
-  - `particleids::Array`:     input array of particle ids by type
-  - `typeids::Array`:         input array of particle type ids
-  - `neighborindexes::Array`: input array of neighbor particle global indexes
-  - `dimension::Int`:         spatial dimension of problem
-  - `r::StateData`:           input arrays of particle positions by particle type and id
-  - `radius::StateData`:      input arrays of particle radi by particle type and id
-  - `m::StateData`:           input arrays of particle masses by particle type and id
-  - `ρ::StateData`:           output arrays of particle densities by particle type and id
+  - `particleindex::Int`:          global index number of current particle
+  - `particleids::Array{Int}`:     input array of particle ids by type
+  - `typeids::Array{Int}`:         input array of particle type ids
+  - `neighborindexes::Array{Int}`: input array of neighbor particle global indexes
+  - `dimension::Int`:              spatial dimension of problem
+  - `r::StateData`:                input arrays of particle positions by particle type and id
+  - `radius::StateData`:           input arrays of particle radi by particle type and id
+  - `m::StateData`:                input arrays of particle masses by particle type and id
+  - `ρ::StateData`:                output arrays of particle densities by particle type and id
 
 # Returns:
 
@@ -131,9 +131,9 @@ neighborindex = neighborindexes[4]
 """
 function sumweightedmassneighbors!(
     particleindex::Int,
-    particleids::Array,
-    typeids::Array,
-    neighborindexes::Array,
+    particleids::Array{Int},
+    typeids::Array{Int},
+    neighborindexes::Array{Int},
     dimension::Int,
     r::StateData,
     radius::StateData,

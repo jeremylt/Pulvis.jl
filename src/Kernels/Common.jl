@@ -11,11 +11,11 @@ Compute the gradient of the kernel
 
 # Arguments:
 
-  - `r_ij::Float`:      distance between particles
-  - `support::Float`:   support radius
-  - `dimension::Float`: spatial dimension
-  - `e_ij::Array`:      input array of normalized distance between particles
-  - `gradW_ij::Array`:  output array of kernel gradient
+  - `r_ij::PulvisScalar`:            distance between particles
+  - `support::PulvisScalar`:         support radius
+  - `dimension::PulvisScalar`:       spatial dimension
+  - `e_ij::Array{PulvisScalar}`:     input array of normalized distance between particles
+  - `gradW_ij::Array{PulvisScalar}`: output array of kernel gradient
 
 # Returns:
 
@@ -68,7 +68,13 @@ gradwij!(r_ij, support, dimension, e_ij, gradW_ij)
 
 ```
 """
-function gradwij!(r_ij, support, dimension::Int, e_ij::Array, gradW_ij::Array)
+function gradwij!(
+    r_ij::PulvisScalar,
+    support::PulvisScalar,
+    dimension::Int,
+    e_ij::Array{PulvisScalar},
+    gradW_ij::Array{PulvisScalar},
+)
     gradW_ij .= e_ij * dwdrij(r_ij, support, dimension)
     return nothing
 end

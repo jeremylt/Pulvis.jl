@@ -11,11 +11,11 @@ Convert density to pressure
 
 # Arguments:
 
-  - `ρ::Float`:                particle density
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `ρ::PulvisScalar`:                particle density
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -43,7 +43,13 @@ exponent = 1
 
 ```
 """
-function densitytopressure_GenTait(ρ, ρ0, c, refdensityfactor, exponent::Int)
+function densitytopressure_GenTait(
+    ρ::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     if exponent == 1
         return c^2 * (ρ - refdensityfactor * ρ0)
     else
@@ -61,11 +67,11 @@ Convert pressure to density
 
 # Arguments:
 
-  - `p::Float`:                particle pressure
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `p::PulvisScalar`:                particle pressure
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -93,7 +99,13 @@ exponent = 1
 
 ```
 """
-function pressuretodensity_GenTait(p, ρ0, c, refdensityfactor, exponent::Int)
+function pressuretodensity_GenTait(
+    p::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     if exponent == 1
         return p / c^2 + refdensityfactor * ρ0
     else
@@ -111,12 +123,12 @@ Convert density to energy
 
 # Arguments:
 
-  - `ρ::Float`:                particle density
-  - `m::Float`:                particle mass
-  - `ρ0::Float`:               initial density
-  - `c::Float`:                speed of sound
-  - `refdensityfactor::Float`: reference density factor
-  - `exponent::Int`:           exponent
+  - `ρ::PulvisScalar`:                particle density
+  - `m::PulvisScalar`:                particle mass
+  - `ρ0::PulvisScalar`:               initial density
+  - `c::PulvisScalar`:                speed of sound
+  - `refdensityfactor::PulvisScalar`: reference density factor
+  - `exponent::Int`:                  exponent
 
 # Returns:
 
@@ -145,7 +157,14 @@ exponent = 1
 
 ```
 """
-function densitytoenergy_GenTait(ρ, m, ρ0, c, refdensityfactor, exponent::Int)
+function densitytoenergy_GenTait(
+    ρ::PulvisScalar,
+    m::PulvisScalar,
+    ρ0::PulvisScalar,
+    c::PulvisScalar,
+    refdensityfactor::PulvisScalar,
+    exponent::Int,
+)
     if exponent == 1
         return -c^2 * m * (log(m^2 / (ρ0 * ρ)) - refdensityfactor * (1.0 + ρ0 / ρ))
     else

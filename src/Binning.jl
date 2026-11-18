@@ -325,8 +325,8 @@ particleids::AbstractArray{Int} = []
 typeids::AbstractArray{Int} = []
 
 # add types
-addparticletype!(\"foo\", 3, typeinfo)
-addparticletype!(\"bar\", 4, typeinfo)
+addparticletype!("foo", 3, typeinfo)
+addparticletype!("bar", 4, typeinfo)
 
 # convert to id arrays
 typeinfotoids!(typeinfo, particleids, typeids)
@@ -371,14 +371,14 @@ end
 """
 ```julia
 buildpairlist!(
-    typeinfo},
+    typeinfo,
     bininfo,
     dimension,
     r,
     radius,
     particleids,
     typeids,
-    nighborindexes
+    nighborindexes,
 )
 ```
 
@@ -386,9 +386,15 @@ Populate list of particle pairs
 
 # Arguments:
 
-  - `typeinfo::Array{TypeInfo}`: input array of particle type information
-  - `particleids::Array{Int}`:   output array of local particle ids by type
-  - `typeids::Array{Int}`:       output array of particle type ids
+  - `bininfo::BinInfo`:            info about background bin layout
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `dimension::Int`:              spatial dimension of problem
+  - `r::StateData`:                input arrays of particle positions by particle type and id
+  - `radius::StateData`:           input arrays of particle radi by particle type and id
+  - `neighborindexes::Array{Int}`: output array of neighbor particle global indexes
+  - `particleids::Array{Int}`:     output array of local particle ids by type
+  - `typeids::Array{Int}`:         output array of particle type ids
 
 # Returns:
 
@@ -396,22 +402,45 @@ Populate list of particle pairs
 
 # Example:
 
+Bin layout:
+
+* * *
+
+## |   index 2 |   index 1 |
+
+## |   index 3 |           |
+
+## |           |   index 4 |
+
 ```jldoctest
 # setup
 typeinfo::Array{TypeInfo} = []
+addparticletype!("foo", 3, typeinfo)
+addparticletype!("bar", 1, typeinfo)
+
+# bins
+lower = [0.0, 1.0, 2.0]
+upper = [1.0, 3.0, 5.0]
+width = 1.0
+counts = Array{Int}(ceil.((upper - lower) / width))
+bininfo = BinInfo(lower, upper, width, counts)
+
+# particle data
+r = StateData{2}([[0.0, 2.5, 2.5, 0.0, 1.0, 2.0, 0.5, 2.0, 3.5], [1.0, 3.0, 5.0]])
+radius = StateData{2}([[2.0, 2.0, 1.0], [2.0]])
+
+# build particle pair lists
 particleids::AbstractArray{Int} = []
 typeids::AbstractArray{Int} = []
-
-# add types
-addparticletype!(\"foo\", 3, typeinfo)
-addparticletype!(\"bar\", 4, typeinfo)
-
-# convert to id arrays
-typeinfotoids!(typeinfo, particleids, typeids)
+neighborindexes::AbstractArray{Int} = []
+buildpairlist!(typeinfo, bininfo, 3, r, radius, particleids, typeids, neighborindexes)
 
 # verify
-@assert particleids == [1, 2, 3, 1, 2, 3, 4]
-@assert typeids == [1, 1, 1, 2, 2, 2, 2]
+@assert particleids == [1, 2, 3, 1]
+@assert typeids == [1, 1, 1, 2]
+#                           --- offsets ---  -- neighbors --
+#                                           |  1  |  2  | 4|
+@assert neighborindexes == [6, 8, 10, 10, 11, 2, 3, 1, 3, 3]
 
 # output
 
@@ -455,14 +484,19 @@ function buildpairlist!(
         radius_i = radius[typeid][particleid]
 
         # Check each neighbor bin
-        binid = binids[particle]
+        binid = binids[particleindex]
         getneighborbinids!(bininfo, dimension, binid, neighborbinids)
+        println(neighborbinids)
         for neighborbin in neighborbinids
             if neighborbin == -1
                 break
             end
             # Check each neighbor in bin
             for neighborindex in bins[neighborbin]
+                if neighborindex == particleindex
+                    continue
+                end
+
                 # Neighbor location
                 neighbortypeid = typeids[neighborindex]
                 neighborid = particleids[neighborindex]
@@ -471,11 +505,12 @@ function buildpairlist!(
                     ((neighborid-1)*dimension+1):(neighborid*dimension),
                 )
                 if norm(r_i - r_j) <= radius_i
-                    push!(nighborindexes, current)
+                    push!(nighborindexes, neighborindex)
                     current += 1
                 end
             end
         end
     end
     neighborindexes[numparticles+1] = current
+    return nothing
 end

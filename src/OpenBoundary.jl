@@ -11,7 +11,7 @@ function prescribeopenboundarystates!(
 )
     numparticles = Int(length(r) / dimension)
 
-    for particleid = 1:numparticles
+    for particleid ∈ 1:numparticles
         boundaryid_i = boundaryid[particleid]
         r_i = view(r, ((particleid-1)*dimension+1):(particleid*dimension))
 

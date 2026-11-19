@@ -191,7 +191,7 @@ function addparticlestatedata!(
                 newstatedata[1:statelength] .= statedata[statename]
             end
             # Add new empty vectors
-            for j = (statelength+1):typelength
+            for j ∈ (statelength+1):typelength
                 newstatedata[j] = PulvisVector{PulvisScalar}()
             end
             # And copy to execution space
@@ -348,7 +348,7 @@ function squareparticlestatedata!(
     typelength = length(typeinfo)
 
     # Check all states
-    for i = 1:length(stateinfo)
+    for i ∈ 1:length(stateinfo)
         statename = stateinfo[i].name
         hasstate = haskey(statedata, statename)
         statelength = hasstate ? length(statedata[statename]) : 0
@@ -361,7 +361,7 @@ function squareparticlestatedata!(
             # Copy current pointers
             newstatedata[1:statelength] .= statedata[statename]
             # Add new empty vectors
-            for j = (statelength+1):typelength
+            for j ∈ (statelength+1):typelength
                 newstatedata[j] = PulvisVector{PulvisScalar}()
             end
             # And copy to execution space
@@ -468,7 +468,7 @@ function addparticles!(
     @assert typeindex != nothing "Type not known"
 
     # Loop over all states
-    for i = 1:length(stateinfo)
+    for i ∈ 1:length(stateinfo)
         # Sanity check
         statename = stateinfo[i].name
         statedimension = stateinfo[i].dimension
@@ -600,7 +600,7 @@ function removeparticles!(
     sort(particleids, rev = true)
 
     # Loop over all states
-    for i = 1:length(stateinfo)
+    for i ∈ 1:length(stateinfo)
         statename = stateinfo[i].name
         statedimension = stateinfo[i].dimension
         newstatedata = []
@@ -611,7 +611,7 @@ function removeparticles!(
         # Drop the target particles in the target type
         data = adapt(Vector{PulvisScalar}, statedata[statename][typeindex])
         numparticles = typeinfo[typeindex].count
-        for id in particleids
+        for id ∈ particleids
             if id < length(data)
                 data[(id*statedimension):((numparticles-1)*statedimension)] .=
                     data[((id+1)*statedimension):(numparticles*statedimension)]

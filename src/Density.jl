@@ -144,7 +144,7 @@ function sumweightedmassneighbors!(
     typeid = typeids[particleindex]
 
     # Loop over pairs for target particle
-    for i = neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
+    for i ∈ neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
         neighborindex = neighborindexes[i]
         neighborid = particleids[neighborindex]
         neighbortypeid = typeids[neighborindex]

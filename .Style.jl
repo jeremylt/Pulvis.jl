@@ -16,7 +16,8 @@ format([
         # "examples",
         # "docs"
     ],
-    format_docstrings = true
+    for_in_replacement = "∈",
+    format_docstrings = true,
 )
 
 # ------------------------------------------------------------------------------

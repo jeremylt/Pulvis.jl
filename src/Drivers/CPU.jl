@@ -34,7 +34,7 @@ function computedensity_cpu!(
     m::StateData,
     ρ::StateData,
 )
-    @threads for i = 1:length(particleids)
+    @threads for i ∈ 1:length(particleids)
         particleid = particleids[i]
         typeid = typeids[i]
 
@@ -90,7 +90,7 @@ function computepressure_cpu!(
     exponent::Array{Int},
     p::StateData,
 )
-    @threads for i = 1:length(particleids)
+    @threads for i ∈ 1:length(particleids)
         particleid = particleids[i]
         typeid = typeids[i]
 
@@ -171,7 +171,7 @@ function computeforces_cpu!(
     v_modified::StateData,
     a_modified::StateData,
 )
-    @threads for i = 1:length(particleids)
+    @threads for i ∈ 1:length(particleids)
         momentumequationneighbors!(
             i,
             particleids,

@@ -127,9 +127,9 @@ function getneighborbinids!(
     end
 
     count = 1
-    for k in zrange
-        for j in yrange
-            for i in xrange
+    for k ∈ zrange
+        for j ∈ yrange
+            for i ∈ xrange
                 neighborbinids[count] =
                     i +
                     (j - 1) * bininfo.counts[1] +
@@ -272,24 +272,24 @@ function particlestobins!(
         totalbins *= bininfo.counts[3]
     end
     if length(bins) < totalbins
-        for i = (length(bins)+1):totalbins
+        for i ∈ (length(bins)+1):totalbins
             push!(bins, Vector{Int}([]))
         end
     end
 
     # Clear old data
-    for i = 1:totalbins
+    for i ∈ 1:totalbins
         empty!(bins[i])
     end
 
     # Populate bins
     count = 0
-    for t = 1:length(r)
+    for t ∈ 1:length(r)
         numparticles = Int(length(r[t]) / dimension)
         if length(binids) < length(r[t]) / dimension + count
             resize!(binids, numparticles + count)
         end
-        for i = 1:numparticles
+        for i ∈ 1:numparticles
             binid = particlepositiontobinid(
                 bininfo,
                 dimension,
@@ -350,7 +350,7 @@ function typeinfotoids!(
 )
     # Count total particles
     numparticles = 0
-    for info in typeinfo
+    for info ∈ typeinfo
         numparticles += info.count
     end
 
@@ -362,7 +362,7 @@ function typeinfotoids!(
 
     # Map local and type ids to global arrays
     current = 0
-    for i = 1:length(typeinfo)
+    for i ∈ 1:length(typeinfo)
         particleids[(current+1):(current+typeinfo[i].count)] .= 1:typeinfo[i].count
         typeids[(current+1):(current+typeinfo[i].count)] .= i
         current += typeinfo[i].count
@@ -406,13 +406,15 @@ Populate list of particle pairs
 
 Bin layout:
 
-* * *
+## #! format: off
 
 ## |   index 2 |   index 1 |
 
 ## |   index 3 |           |
 
 ## |           |   index 4 |
+
+#! format: on
 
 ```jldoctest
 # setup
@@ -473,7 +475,7 @@ function buildpairlist!(
 
     # Loop over global particle ids
     current = numparticles + 2
-    for particleindex = 1:numparticles
+    for particleindex ∈ 1:numparticles
         # Mark starting index
         neighborindexes[particleindex] = current
 
@@ -489,12 +491,12 @@ function buildpairlist!(
         binid = binids[particleindex]
         getneighborbinids!(bininfo, dimension, binid, neighborbinids)
         println(neighborbinids)
-        for neighborbin in neighborbinids
+        for neighborbin ∈ neighborbinids
             if neighborbin == -1
                 break
             end
             # Check each neighbor in bin
-            for neighborindex in bins[neighborbin]
+            for neighborindex ∈ bins[neighborbin]
                 if neighborindex == particleindex
                     continue
                 end

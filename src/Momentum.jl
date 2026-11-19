@@ -131,7 +131,7 @@ function momentumequationneighbors!(
     particleid = particleids[particleindex]
     typeid = typeids[particleindex]
 
-    for i = neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
+    for i ∈ neighborindexes[particleindex]:(neighborindexes[particleindex+1]-1)
         neighborindex = neighborindexes[i]
         neighborid = particleids[neighborindex]
         neighbortypeid = typeids[neighborindex]

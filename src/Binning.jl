@@ -181,7 +181,11 @@ r = [0.75, 3.0, 4.7]
 
 ```
 """
-function particlepositiontobinid(bininfo::BinInfo, dimension::Int, r::Array{PulvisScalar})
+function particlepositiontobinid(
+    bininfo::BinInfo,
+    dimension::Int,
+    r::AbstractArray{PulvisScalar},
+)
     binid = max(ceil(Int, (r[1] - bininfo.lower[1]) / bininfo.width), 1)
     if dimension > 1
         binid +=
@@ -285,11 +289,11 @@ function particlestobins!(
         if length(binids) < length(r[t]) / dimension + count
             resize!(binids, numparticles + count)
         end
-        @threads for i = 1:numparticles
+        for i = 1:numparticles
             binid = particlepositiontobinid(
                 bininfo,
                 dimension,
-                r[t][Int((i-1)*dimension+1):Int(i*dimension)],
+                view(r[t], Int((i-1)*dimension+1):Int(i*dimension)),
             )
             push!(bins[binid], i + count)
             binids[i+count] = binid
@@ -359,10 +363,8 @@ function typeinfotoids!(
     # Map local and type ids to global arrays
     current = 0
     for i = 1:length(typeinfo)
-        @threads for j = 1:typeinfo[i].count
-            particleids[j+current] = j
-            typeids[j+current] = i
-        end
+        particleids[(current+1):(current+typeinfo[i].count)] .= 1:typeinfo[i].count
+        typeids[(current+1):(current+typeinfo[i].count)] .= i
         current += typeinfo[i].count
     end
     return nothing

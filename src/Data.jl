@@ -164,7 +164,7 @@ addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, fa
 """
 function addparticlestatedata!(
     typename::String,
-    typeinfo::Array{StateInfo},
+    typeinfo::Array{TypeInfo},
     statenames::Array{String},
     stateinfo::Array{StateInfo},
     statedata::Dict,
@@ -187,8 +187,8 @@ function addparticlestatedata!(
             resize!(newstatedata, typelength)
 
             # Copy current pointers
-            for j = 1:statelength
-                newstatedata[j] = statedata[statename][j]
+            if statelength > 0
+                newstatedata[1:statelength] .= statedata[statename]
             end
             # Add new empty vectors
             for j = (statelength+1):typelength
@@ -349,8 +349,9 @@ function squareparticlestatedata!(
 
     # Check all states
     for i = 1:length(stateinfo)
-        hasstate = haskey(statedata, stateinfo[i].name)
-        statelength = hasstate ? length(statedata[stateinfo[i].name]) : 0
+        statename = stateinfo[i].name
+        hasstate = haskey(statedata, statename)
+        statelength = hasstate ? length(statedata[statename]) : 0
 
         # Square off if the state is missing some types
         if typelength > statelength
@@ -358,15 +359,13 @@ function squareparticlestatedata!(
             resize!(newstatedata, typelength)
 
             # Copy current pointers
-            for j = 1:statelength
-                newstatedata[j] = statedata[stateinfo[i].name][j]
-            end
+            newstatedata[1:statelength] .= statedata[statename]
             # Add new empty vectors
             for j = (statelength+1):typelength
                 newstatedata[j] = PulvisVector{PulvisScalar}()
             end
             # And copy to execution space
-            statedata[stateinfo[i].name] = adapt(
+            statedata[statename] = adapt(
                 PulvisVector,
                 StateData{typelength,PulvisVector{PulvisScalar}}(newstatedata),
             )
@@ -471,52 +470,44 @@ function addparticles!(
     # Loop over all states
     for i = 1:length(stateinfo)
         # Sanity check
-        @assert !haskey(newdata, stateinfo[i].name) || (
-            length(newdata[stateinfo[i].name]) == numparticles * stateinfo[i].dimension
-        )
+        statename = stateinfo[i].name
+        statedimension = stateinfo[i].dimension
+        @assert !haskey(newdata, statename) ||
+                (length(newdata[statename]) == numparticles * statedimension)
 
         # Skip if state isn't in data to add
-        if !haskey(newdata, stateinfo[i].name)
+        if !haskey(newdata, statename)
             continue
         end
 
         # Check if enough space is already allocated
-        if length(newdata[stateinfo[i].name]) > 0
+        if length(newdata[statename]) > 0
             newstatedata = []
             resize!(newstatedata, typelength)
 
             # Copy current pointers
-            for j = 1:(typeindex-1)
-                newstatedata[j] = statedata[stateinfo[i].name][j]
-            end
+            newstatedata[1:(typeindex-1)] .= statedata[statename][1:(typeindex-1)]
             # Add the target particles in the target type
-            data = adapt(Vector{PulvisScalar}, statedata[stateinfo[i].name][typeindex])
-            if length(statedata[stateinfo[i].name]) <
-               ((typeinfo[typeindex].count + numparticles) * stateinfo[i].dimension)
-                resize!(
-                    data,
-                    (typeinfo[typeindex].count + numparticles) * stateinfo[i].dimension,
-                )
+            data = adapt(Vector{PulvisScalar}, statedata[statename][typeindex])
+            if length(statedata[statename]) <
+               ((typeinfo[typeindex].count + numparticles) * statedimension)
+                resize!(data, (typeinfo[typeindex].count + numparticles) * statedimension)
             end
-            for j = 1:length(newdata[stateinfo[i].name])
-                data[typeinfo[typeindex].count*stateinfo[i].dimension+j] =
-                    newdata[stateinfo[i].name][j]
-            end
+            data[(typeinfo[typeindex].count*statedimension+1):((typeinfo[typeindex].count+numparticles)*statedimension)] .=
+                newdata[statename]
             newstatedata[typeindex] = adapt(PulvisVector{PulvisScalar}, data)
             # Copy the rest of the current pointers
-            for j = (typeindex+1):typelength
-                newstatedata[j] = statedata[stateinfo[i].name][j]
-            end
+            newstatedata[(typeindex+1):typelength] .=
+                statedata[statename][(typeindex+1):typelength]
             # And copy to execution space
-            statedata[stateinfo[i].name] = adapt(
+            statedata[statename] = adapt(
                 PulvisVector,
                 StateData{typelength,PulvisVector{PulvisScalar}}(newstatedata),
             )
         end
     end
     # Finally increase particle count
-    typeinfo[typeindex] =
-        TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count + numparticles)
+    typeinfo[typeindex] = TypeInfo(typename, typeinfo[typeindex].count + numparticles)
     return nothing
 end
 
@@ -610,33 +601,29 @@ function removeparticles!(
 
     # Loop over all states
     for i = 1:length(stateinfo)
+        statename = stateinfo[i].name
+        statedimension = stateinfo[i].dimension
         newstatedata = []
         resize!(newstatedata, typelength)
 
         # Copy current pointers
-        for j = 1:(typeindex-1)
-            newstatedata[j] = statedata[stateinfo[i].name][j]
-        end
+        newstatedata[1:(typeindex-1)] .= statedata[statename][1:(typeindex-1)]
         # Drop the target particles in the target type
-        data = adapt(Vector{PulvisScalar}, statedata[stateinfo[i].name][typeindex])
+        data = adapt(Vector{PulvisScalar}, statedata[statename][typeindex])
         numparticles = typeinfo[typeindex].count
         for id in particleids
             if id < length(data)
-                for j =
-                        (id*stateinfo[i].dimension):((numparticles-1)*stateinfo[i].dimension)
-
-                    data[j] = data[j+stateinfo[i].dimension]
-                end
+                data[(id*statedimension):((numparticles-1)*statedimension)] .=
+                    data[((id+1)*statedimension):(numparticles*statedimension)]
             end
             numparticles -= 1
         end
         newstatedata[typeindex] = adapt(PulvisVector{PulvisScalar}, data)
         # Copy the rest of the current pointers
-        for j = (typeindex+1):typelength
-            newstatedata[j] = statedata[stateinfo[i].name][j]
-        end
+        newstatedata[(typeindex+1):typelength] .=
+            statedata[statename][(typeindex+1):typelength]
         # And copy to execution space
-        statedata[stateinfo[i].name] = adapt(
+        statedata[statename] = adapt(
             PulvisVector,
             StateData{typelength,PulvisVector{PulvisScalar}}(newstatedata),
         )

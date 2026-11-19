@@ -16,7 +16,7 @@ function prescribeopenboundarystates!(
         r_i = view(r, ((particleid-1)*dimension+1):(particleid*dimension))
 
         v[((particleid-1)*dimension+1):(particleid*dimension)] .=
-            -boundaryfunction![boundaryid_i](r_i, time, 0) * boundarynormal[boundrayid]
+            -boundaryfunctions[boundaryid_i](r_i, time, 0) * boundarynormal[boundrayid]
     end
     return nothing
 end

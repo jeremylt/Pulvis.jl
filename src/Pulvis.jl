@@ -19,6 +19,7 @@ include("Binning.jl")
 include("Data.jl")
 include("Enums.jl")
 include("Kernels.jl")
+include("OpenBoundary.jl")
 
 # Physics
 include("EquationsOfState.jl")

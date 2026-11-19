@@ -2,23 +2,69 @@
 # Time step hooks
 # ------------------------------------------------------------------------------
 
-function pretimestep(
-    particleids::Array{Int},
-    typeids::Array{Int},
-    neighborindexes::Array{Int},
+"""
+```julia
+pretimestep!(
+    bininfo,
+    dimension,
+    time,
+    typeinfo,
+    stateinfo,
+    statedata,
+    particleids,
+    typeids,
+    neighborindexes,
+)
+```
+
+Prepare for timestep; apply the open boundary conditions, update local particle id and particle type id arrays and the neighbor particle global index array
+
+# Arguments:
+
+  - `bininfo::BinInfo`:            info about background bin layout
+  - `dimension::Int`:              spatial dimension of problem
+  - `time::PulvisScalar`:          current solver time
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
+  - `particleids::Array{Int}`:     input/output array of local particle ids by type
+  - `typeids::Array{Int}`:         input/output array of particle type ids
+  - `neighborindexes::Array{Int}`: input/output array of neighbor particle global indexes
+
+# Returns:
+
+  - none
+"""
+function pretimestep!(
     bininfo::BinInfo,
     dimension::Int,
     time::PulvisScalar,
     typeinfo::Array{TypeInfo},
     stateinfo::Array{StateInfo},
     statedata::Dict,
+    particleids::Array{Int},
+    typeids::Array{Int},
+    neighborindexes::Array{Int},
 )
-    # Boundaries
-    perscribeopenboundarystates!(time, typeinfo, stateinfo, statedata)
-
     # Get state data
+    boundaryid = getparticlestatedata(statedata, "boundary id")
     r = getparticlestatedata(statedata, "position")
+    v = getparticlestatedata(statedata, "velocity")
     radius = getparticlestatedata(statedata, "radius")
+
+    # Index of open boundary type
+    boundaryindex = findfirst(t -> t.name == "open boundary", typeinfo)
+
+    # Boundaries
+    if boundaryindex != nothing
+        prescribeopenboundarystates!(
+            time,
+            dimension,
+            boundaryid[boundaryindex],
+            r[boundaryindex],
+            v[boundaryindex],
+        )
+    end
 
     # Build pair list
     buildpairlist!(
@@ -33,7 +79,36 @@ function pretimestep(
     )
 end
 
-function evaluatetimestep(
+"""
+```julia
+evaluatetimestep!(
+    particleids,
+    typeids,
+    neighborindexes,
+    dimension,
+    typeinfo,
+    stateinfo,
+    statedata,
+)
+```
+
+Evaluate time step; compute density, convert density to pressure, then various forces, acceleration, etc from density and pressure
+
+# Arguments:
+
+  - `particleids::Array{Int}`:     input array of local particle ids by type
+  - `typeids::Array{Int}`:         input array of particle type ids
+  - `neighborindexes::Array{Int}`: input array of neighbor particle global indexes
+  - `dimension::Int`:              spatial dimension of problem
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
+
+# Returns:
+
+  - none
+"""
+function evaluatetimestep!(
     particleids::Array{Int},
     typeids::Array{Int},
     neighborindexes::Array{Int},
@@ -79,10 +154,41 @@ function evaluatetimestep(
     )
 end
 
-function posttimestep(typeinfo::Array, stateinfo::Array, statedata::Dict)
+"""
+```julia
+posttimestep!(
+    particleids,
+    typeids,
+    neighborindexes,
+    dimension,
+    typeinfo,
+    stateinfo,
+    statedata,
+)
+```
+
+Conclude time step; check boundary phase changes, evaluate peridynamic damage, etc
+
+# Arguments:
+
+  - `time::PulvisScalar`:          current solver time
+  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
+  - `stateinfo::Array{StateInfo}`: input array of particle state information
+  - `statedata::Dict`:             input/output dictionary of particle state data arrays
+
+# Returns:
+
+  - none
+"""
+function posttimestep!(
+    time::PulvisScalar,
+    typeinfo::Array,
+    stateinfo::Array,
+    statedata::Dict,
+)
     # Boundaries
-    checkopenboundaryphasechange(time, typeinfo, stateinfo, statedata)
-    evaluatephasechange(time, typeinfo, stateinfo, statedata)
+    checkopenboundaryphasechange!(time, typeinfo, stateinfo, statedata)
+    evaluatephasechange!(time, typeinfo, stateinfo, statedata)
 
     # Peridynamics
     # evaluatedamage(time, typeinfo, stateinfo, statedata)

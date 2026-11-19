@@ -404,18 +404,6 @@ Populate list of particle pairs
 
 # Example:
 
-Bin layout:
-
-## #! format: off
-
-## |   index 2 |   index 1 |
-
-## |   index 3 |           |
-
-## |           |   index 4 |
-
-#! format: on
-
 ```jldoctest
 # setup
 typeinfo::Array{TypeInfo} = []

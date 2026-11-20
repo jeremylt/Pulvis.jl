@@ -3,17 +3,11 @@
 # ------------------------------------------------------------------------------
 
 boundaryfunctions = []
-boundarynormal::Array{SArray{PulvisScalar,3}} = [[]]
+boundarynormal::Array{Array{PulvisScalar}} = [[]]
 
 """
 ```julia
-prescribeopenboundarystates!(
-    time,
-    dimension,
-    boundaryid,
-    r,
-    v,
-)
+prescribeopenboundarystates!(time, dimension, boundaryid, r, v)
 ```
 
 Set values of boundary particles based upon prescribed boundary functions

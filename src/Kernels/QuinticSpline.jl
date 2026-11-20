@@ -28,7 +28,7 @@ support = 0.9
 h = support / 3.0
 
 # verify
-@assert smoothinglength(support) ≈ h
+@assert Pulvis.smoothinglength(support) ≈ h
 
 # output
 
@@ -73,11 +73,11 @@ normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
 
 # verify
 dimension = 1
-@assert normalizationconstant(h_inv, dimension) ≈ normalization_1d
+@assert Pulvis.normalizationconstant(h_inv, dimension) ≈ normalization_1d
 dimension = 2
-@assert normalizationconstant(h_inv, dimension) ≈ normalization_2d
+@assert Pulvis.normalizationconstant(h_inv, dimension) ≈ normalization_2d
 dimension = 3
-@assert normalizationconstant(h_inv, dimension) ≈ normalization_3d
+@assert Pulvis.normalizationconstant(h_inv, dimension) ≈ normalization_3d
 
 # output
 
@@ -130,11 +130,11 @@ normalization_3d = 3.0 * (1.0 / π) / (359.0 * h^3)
 # verify
 w_unnormalized = 66.0
 dimension = 1
-@assert w0(support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w0(support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w0(support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w0(support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w0(support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w0(support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
@@ -181,51 +181,51 @@ r_ij = 0.0
 q = r_ij / h
 w_unnormalized = 66.0
 dimension = 1
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.2
 q = r_ij / h
 w_unnormalized = (3.0 - q)^5 - 6.0 * (2.0 - q)^5 + 15.0 * (1.0 - q)^5
 dimension = 1
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.5
 q = r_ij / h
 w_unnormalized = (3.0 - q)^5 - 6.0 * (2.0 - q)^5
 dimension = 1
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.8
 q = r_ij / h
 w_unnormalized = (3.0 - q)^5
 dimension = 1
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.9
 q = r_ij / h
 w_unnormalized = 0.0
 dimension = 1
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.w(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
@@ -285,51 +285,51 @@ r_ij = 0.0
 q = r_ij / h
 w_unnormalized = 0.0
 dimension = 1
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.2
 q = r_ij / h
 w_unnormalized = (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) * (1.0 / h)
 dimension = 1
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.5
 q = r_ij / h
 w_unnormalized = (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4) * (1.0 / h)
 dimension = 1
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.8
 q = r_ij / h
 w_unnormalized = -5.0 * (3.0 - q)^4 * (1.0 / h)
 dimension = 1
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.9
 q = r_ij / h
 w_unnormalized = 0.0
 dimension = 1
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.dwdrij(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 
@@ -394,52 +394,52 @@ r_ij = 0.0
 q = r_ij / h
 w_unnormalized = -4000.0 / 3.0
 dimension = 1
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.2
 q = r_ij / h
 w_unnormalized =
     (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3 + 300.0 * (1.0 - q)^3) * (1.0 / h^2)
 dimension = 1
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.5
 q = r_ij / h
 w_unnormalized = (20.0 * (3.0 - q)^3 - 120.0 * (2.0 - q)^3) * (1.0 / h^2)
 dimension = 1
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.8
 q = r_ij / h
 w_unnormalized = 20.0 * (3.0 - q)^3 * (1.0 / h^2)
 dimension = 1
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 r_ij = 0.9
 q = r_ij / h
 w_unnormalized = 0.0
 dimension = 1
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_1d
 dimension = 2
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_2d
 dimension = 3
-@assert d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
+@assert Pulvis.d2wdrij2(r_ij, support, dimension) ≈ w_unnormalized * normalization_3d
 
 # output
 

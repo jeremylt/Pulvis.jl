@@ -35,9 +35,9 @@ refdensityfactor = 0.9
 
 # verify
 exponent = 7
-@assert densitytopressure(ρ, ρ0, c, refdensityfactor, exponent) ≈ 0.5640046918e2
+@assert Pulvis.densitytopressure(ρ, ρ0, c, refdensityfactor, exponent) ≈ 0.5640046918e2
 exponent = 1
-@assert densitytopressure(ρ, ρ0, c, refdensityfactor, exponent) ≈ 0.47775e1
+@assert Pulvis.densitytopressure(ρ, ρ0, c, refdensityfactor, exponent) ≈ 0.47775e1
 
 # output
 
@@ -91,9 +91,9 @@ p = 1.8
 
 # verify
 exponent = 7
-@assert pressuretodensity(p, ρ0, c, refdensityfactor, exponent) ≈ 0.477832244
+@assert Pulvis.pressuretodensity(p, ρ0, c, refdensityfactor, exponent) ≈ 0.477832244
 exponent = 1
-@assert pressuretodensity(p, ρ0, c, refdensityfactor, exponent) ≈ 0.506938775
+@assert Pulvis.pressuretodensity(p, ρ0, c, refdensityfactor, exponent) ≈ 0.506938775
 
 # output
 
@@ -149,9 +149,9 @@ m = 1.3
 
 # verify
 exponent = 7
-@assert densitytoenergy(ρ, m, ρ0, c, refdensityfactor, exponent) ≈ 0.1999413554e2
+@assert Pulvis.densitytoenergy(ρ, m, ρ0, c, refdensityfactor, exponent) ≈ 0.1999413554e2
 exponent = 1
-@assert densitytoenergy(ρ, m, ρ0, c, refdensityfactor, exponent) ≈ -0.5553068732e1
+@assert Pulvis.densitytoenergy(ρ, m, ρ0, c, refdensityfactor, exponent) ≈ -0.5553068732e1
 
 # output
 

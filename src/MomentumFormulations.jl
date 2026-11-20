@@ -28,13 +28,13 @@ Set the momentum formulation
 setmomentumformulation(MomentumFormulation.Adami)
 
 # verify
-@assert specificcoefficient == specificcoefficient_Adami;
+@assert Pulvis.specificcoefficient == Pulvis.specificcoefficient_Adami;
 
-# set shape function
-setkernelshape(MomentumFormulation.Monagahn)
+# set momentum formulation
+setmomentumformulation(MomentumFormulation.Monagahn)
 
 # verify
-@assert specificcoefficient = specificcoefficient_Monagahn;
+@assert Pulvis.specificcoefficient == Pulvis.specificcoefficient_Monagahn;
 
 # output
 

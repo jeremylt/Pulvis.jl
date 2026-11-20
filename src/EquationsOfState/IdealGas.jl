@@ -32,7 +32,7 @@ c = 3.5
 ρ = 0.75
 
 # verify
-@assert densitytopressure(ρ, 0.0, c, 0.0, 0) ≈ 9.1875
+@assert Pulvis.densitytopressure(ρ, 0.0, c, 0.0, 0) ≈ 9.1875
 
 # output
 
@@ -79,7 +79,7 @@ p = 1.8
 ρ0 = 0.4
 
 # verify
-@assert pressuretodensity(p, ρ0, c, 0.0, 0) ≈ 0.146938775
+@assert Pulvis.pressuretodensity(p, ρ0, c, 0.0, 0) ≈ 0.146938775
 
 # output
 
@@ -128,7 +128,7 @@ m = 1.3
 ρ0 = 0.4
 
 # verify
-@assert densitytoenergy(ρ, m, ρ0, c, 0.0, 0) ≈ -0.2752956873e2
+@assert Pulvis.densitytoenergy(ρ, m, ρ0, c, 0.0, 0) ≈ -0.2752956873e2
 
 # output
 

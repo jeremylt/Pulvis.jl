@@ -35,7 +35,7 @@ m_j = 0.23
 dWdr_ij = 0.3
 
 # compute specific coefficient
-speccoeff = specificcoefficient(ρ_i, ρ_j, m_i, m_j, dWdr_ij)
+speccoeff = Pulvis.specificcoefficient(ρ_i, ρ_j, m_i, m_j, dWdr_ij)
 
 # verify
 @assert speccoeff ≈ ((m_i / ρ_i)^2 + (m_j / ρ_j)^2) * dWdr_ij / m_i
@@ -91,7 +91,7 @@ e_ij = [1.0 / √21.0, 2.0 / √21.0, 4.0 / √21.0]
 a = [1.0, 2.0, 3.0]
 
 # compute pressure gradient
-pressuregradient!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
+Pulvis.pressuregradient!(ρ_i, ρ_j, p_i, p_j, speccoeff, e_ij, a)
 
 # verify
 @assert a ≈ [1.0, 2.0, 3.0] - (ρ_i * p_j + ρ_j * p_i) / (ρ_i + ρ_j) * speccoeff * e_ij
@@ -140,6 +140,7 @@ Compute the shear forces
   - `ρ_j::PulvisScalar`:         density of second particle
   - `v_i::Array{PulvisScalar}`:  velocity of first particle
   - `v_j::Array{PulvisScalar}`:  velocity of second particle
+  - `kernelfac::Int`:            kernel factor
   - `μ_i::PulvisScalar`:         dynamic viscosity of first particle
   - `μ_j::PulvisScalar`:         dynamic viscosity of second particle
   - `μ_bulk_i::PulvisScalar`:    bulk viscosity of first particle
@@ -166,7 +167,7 @@ v_i = [0.1, 2.0, -0.4]
 v_j = [0.27, -1.3, 0.5]
 absdist = 0.3
 e_ij = [1.0 / √21.0, 2.0 / √21.0, 4.0 / √21.0]
-speccoef = 12.42
+speccoeff = 12.42
 kernelfac = 3
 μ_i = 0.03
 μ_j = 0.05
@@ -175,7 +176,7 @@ kernelfac = 3
 a = [1.0, 2.0, 3.0]
 
 # compute shear forces
-shearforces!(
+Pulvis.shearforces!(
     ρ_i,
     ρ_j,
     v_i,
@@ -205,7 +206,7 @@ function shearforces_Adami!(
     ρ_j::PulvisScalar,
     v_i::AbstractArray{PulvisScalar},
     v_j::AbstractArray{PulvisScalar},
-    kernelfac::PulvisScalar,
+    kernelfac::Int,
     μ_i::PulvisScalar,
     μ_j::PulvisScalar,
     μ_bulk_i::PulvisScalar,
@@ -253,12 +254,12 @@ setmomentumformulation(MomentumFormulation.Adami)
 ρ_i = 1.02
 ρ_j = 0.97
 e_ij = [1.0 / √21.0, 2.0 / √21.0, 4.0 / √21.0]
-speccoef = 12.42
+speccoeff = 12.42
 p_background = 10.0
 a_modified = [1.0, 2.0, 3.0]
 
 # compute standard background pressure forces
-standardbackgroundpressure!(ρ_i, ρ_j, p_background, speccoeff, e_ij, a_modified)
+Pulvis.standardbackgroundpressure!(ρ_i, ρ_j, p_background, speccoeff, e_ij, a_modified)
 
 # verify
 @assert a_modified ≈ [1.0, 2.0, 3.0] - speccoeff * p_background * e_ij
@@ -327,7 +328,7 @@ dWdr_ij_mod = 0.32
 a_modified = [1.0, 2.0, 3.0]
 
 # compute generalized background pressure forces
-generalizedbackgroundpressure!(
+Pulvis.generalizedbackgroundpressure!(
     ρ_i,
     ρ_j,
     m_i,
@@ -410,7 +411,7 @@ speccoeff = 12.42
 a_modified = [1.0, 2.0, 3.0]
 
 # compute modified velocity force contribution
-modifiedvelocitycontribution!(
+Pulvis.modifiedvelocitycontribution!(
     ρ_i,
     ρ_j,
     v_i,
@@ -425,8 +426,8 @@ modifiedvelocitycontribution!(
 # verify
 A_i = [0.0 0.0 0.0; 0.0 0.0 0.0; 0.0 0.0 0.0]
 A_j = [0.0 0.0 0.0; 0.0 0.0 0.0; 0.0 0.0 0.0]
-for i = 1:3
-    for j = 1:3
+for i ∈ 1:3
+    for j ∈ 1:3
         A_i[i, j] = ρ_i * v_i[i] * (v_modified_i[j] - v_i[j])
         A_j[i, j] = ρ_j * v_j[i] * (v_modified_j[j] - v_j[j])
     end
@@ -437,7 +438,7 @@ A_ij_e_ij = 0.5 * A_i * e_ij + 0.5 * A_j * e_ij
 
 # try with no v_modified_*
 a_modified = [1.0, 2.0, 3.0]
-modifiedvelocitycontribution!(ρ_i, ρ_j, v_i, v_j, speccoeff, e_ij, a_modified)
+Pulvis.modifiedvelocitycontribution!(ρ_i, ρ_j, v_i, v_j, speccoeff, e_ij, a_modified)
 
 # verify
 @assert a_modified ≈ [1.0, 2.0, 3.0]

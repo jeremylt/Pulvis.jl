@@ -4,12 +4,19 @@
 
 module Pulvis
 
-# Dependencies
+# ------------------------------------------------------------------------------
+# Standard libraries
+# ------------------------------------------------------------------------------
+
 using Base.Threads
 using CUDA
 using Adapt
 using LinearAlgebra: norm, dot, ⋅
 using StaticArrays
+
+# ------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------
 
 # Types
 include("Types.jl")
@@ -32,5 +39,15 @@ include("TimeStep.jl")
 
 # Drivers
 include("Drivers.jl")
+
+# ------------------------------------------------------------------------------
+# User available types and methods
+# ------------------------------------------------------------------------------
+
+export PulvisScalar, StateData, PulvisVector
+export TypeInfo, StateInfo, BinInfo
+export Kernel, MomentumFormulation, EquationOfState
+export setkernelshape, setmomentumformulation, setequationsofstate
+export setdevicecomputation
 
 end # module Pulvis

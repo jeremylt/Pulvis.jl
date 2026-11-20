@@ -29,13 +29,13 @@ Set the kernel shape function
 setkernelshape(Kernel.CubicSpline)
 
 # verify
-@assert w == w_CubicSpline
+@assert Pulvis.w == Pulvis.w_CubicSpline
 
 # set shape function
 setkernelshape(Kernel.QuinticSpline)
 
 # verify
-@assert w0 == w0_QuinticSpline
+@assert Pulvis.w0 == Pulvis.w0_QuinticSpline
 
 # output
 

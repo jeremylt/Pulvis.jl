@@ -25,16 +25,16 @@ Set the equations of state
 
 ```jldoctest
 # set equations of state
-setequationsofstate(EquationOfState.GenTait)
+Pulvis.setequationsofstate(EquationOfState.GenTait)
 
 # verify
-@assert densitytopressure == densitytopressure_GenTait
+@assert Pulvis.densitytopressure == Pulvis.densitytopressure_GenTait
 
 # set equations of state
-setequationsofstate(EquationOfState.IdealGas)
+Pulvis.setequationsofstate(Pulvis.EquationOfState.IdealGas)
 
 # verify
-@assert densitytopressure == densitytopressure_IdealGas
+@assert Pulvis.densitytopressure == Pulvis.densitytopressure_IdealGas
 
 # output
 

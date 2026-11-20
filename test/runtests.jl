@@ -1,16 +1,16 @@
 # ------------------------------------------------------------------------------
-# test suite
+# Test suite
 # ------------------------------------------------------------------------------
 
 using Test, Documenter, Pulvis
-DocMeta.setdocmeta!(Pulvis, :DocTestSetup, :(using Pulvis); recursive = true)
+DocMeta.setdocmeta!(Pulvis, :DocTestSetup, :(using Pulvis, LinearAlgebra); recursive = true)
 
 # ------------------------------------------------------------------------------
-# documentation tests
+# Documentation tests
 # ------------------------------------------------------------------------------
 
 @testset "  documentation tests                        " begin
-    doctest(LFAToolkit; manual = false)
+    doctest(Pulvis; manual = false)
 end
 
 # ------------------------------------------------------------------------------

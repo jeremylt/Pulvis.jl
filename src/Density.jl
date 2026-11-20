@@ -35,7 +35,7 @@ m = StateData{1}([[42.0]])
 setkernelshape(Kernel.CubicSpline)
 
 # compute density
-sumweightedmassself!(particleid, dimension, radius[1], m[1], ρ[1])
+Pulvis.sumweightedmassself!(particleid, dimension, radius[1], m[1], ρ[1])
 
 # verify
 @assert ρ[1][particleid] ≈ 76.39437268410974
@@ -106,7 +106,7 @@ m = StateData{2}([[42.0, 13.0], [14.0]])
 setkernelshape(Kernel.CubicSpline)
 
 # compute density
-sumweightedmassneighbors!(
+Pulvis.sumweightedmassneighbors!(
     particleindex,
     particleids,
     typeids,

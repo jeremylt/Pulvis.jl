@@ -41,7 +41,7 @@ q = r_ij / h
 # verify
 w_unnormalized = (-3.0 * q + 2.25 * q^2) * (1.0 / h)
 dimension = 3
-gradwij!(r_ij, support, dimension, e_ij, gradW_ij)
+Pulvis.gradwij!(r_ij, support, dimension, e_ij, gradW_ij)
 @assert gradW_ij ≈ w_unnormalized * normalization_3d * e_ij
 
 # set quintic kernel
@@ -61,7 +61,7 @@ q = r_ij / h
 # verify
 w_unnormalized = (-5.0 * (3.0 - q)^4 + 30.0 * (2.0 - q)^4 - 75.0 * (1.0 - q)^4) * (1.0 / h)
 dimension = 3
-gradwij!(r_ij, support, dimension, e_ij, gradW_ij)
+Pulvis.gradwij!(r_ij, support, dimension, e_ij, gradW_ij)
 @assert gradW_ij ≈ w_unnormalized * normalization_3d * e_ij
 
 # output

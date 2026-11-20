@@ -33,9 +33,9 @@ counts = Array{Int}(ceil.((upper - lower) / width))
 bininfo = BinInfo(lower, upper, width, counts)
 
 # verify
-@assert binidtodimids(bininfo, 3, 1) == (1, 1, 1)
-@assert binidtodimids(bininfo, 3, 14) == (2, 2, 2)
-@assert binidtodimids(bininfo, 3, 27) == (3, 3, 3)
+@assert Pulvis.binidtodimids(bininfo, 3, 1) == (1, 1, 1)
+@assert Pulvis.binidtodimids(bininfo, 3, 14) == (2, 2, 2)
+@assert Pulvis.binidtodimids(bininfo, 3, 27) == (3, 3, 3)
 
 # output
 
@@ -85,19 +85,19 @@ neighborbinids::Array{Int} = []
 resize!(neighborbinids, 28)
 
 # middle
-getneighborbinids!(bininfo, 3, 14, neighborbinids)
+Pulvis.getneighborbinids!(bininfo, 3, 14, neighborbinids)
 
 # verify
 @assert neighborbinids[1:27] == 1:27
 
 # low corner
-getneighborbinids!(bininfo, 3, 1, neighborbinids)
+Pulvis.getneighborbinids!(bininfo, 3, 1, neighborbinids)
 
 # verify
 @assert neighborbinids[1:9] == [1, 2, 4, 5, 10, 11, 13, 14, -1]
 
 # high corner
-getneighborbinids!(bininfo, 3, 27, neighborbinids)
+Pulvis.getneighborbinids!(bininfo, 3, 27, neighborbinids)
 
 # verify
 @assert neighborbinids[1:9] == [14, 15, 17, 18, 23, 24, 26, 27, -1]
@@ -173,9 +173,9 @@ bininfo = BinInfo(lower, upper, width, counts)
 r = [0.75, 3.0, 4.7]
 
 # verify
-@assert particlepositiontobinid(bininfo, 1, r) == 3
-@assert particlepositiontobinid(bininfo, 2, r) == 27
-@assert particlepositiontobinid(bininfo, 3, r) == 279
+@assert Pulvis.particlepositiontobinid(bininfo, 1, r) == 3
+@assert Pulvis.particlepositiontobinid(bininfo, 2, r) == 27
+@assert Pulvis.particlepositiontobinid(bininfo, 3, r) == 279
 
 # output
 
@@ -230,13 +230,13 @@ width = 1.0
 counts = Array{Int}(ceil.((upper - lower) / width))
 bininfo = BinInfo(lower, upper, width, counts)
 bins::Vector{Vector{Int}} = [[]]
-binids = []
+binids::Array{Int} = []
 
 # particle locations
 r = StateData{2}([[0.0, 1.5, 2.5, 0.0, 1.0, 2.0], [1.0, 3.0, 5.0]])
 
 # assign particles to bins
-particlestobins!(bininfo, 3, r, bins, binids)
+Pulvis.particlestobins!(bininfo, 3, r, bins, binids)
 
 # verify
 @assert bins == [[1, 2], [], [], [], [], [3]]
@@ -246,7 +246,7 @@ particlestobins!(bininfo, 3, r, bins, binids)
 r = StateData{2}([[0.0, 2.5, 2.5, 0.0, 1.0, 2.0, 0.5, 2.0, 3.5], [1.0, 3.0, 5.0]])
 
 # assign particles to new bins
-particlestobins!(bininfo, 3, r, bins, binids)
+Pulvis.particlestobins!(bininfo, 3, r, bins, binids)
 
 # verify
 @assert bins == [[2], [1], [3], [], [], [4]]
@@ -329,11 +329,11 @@ particleids::AbstractArray{Int} = []
 typeids::AbstractArray{Int} = []
 
 # add types
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # convert to id arrays
-typeinfotoids!(typeinfo, particleids, typeids)
+Pulvis.typeinfotoids!(typeinfo, particleids, typeids)
 
 # verify
 @assert particleids == [1, 2, 3, 1, 2, 3, 4]
@@ -380,7 +380,7 @@ buildpairlist!(
     radius,
     particleids,
     typeids,
-    nighborindexes,
+    neighborindexes,
 )
 ```
 
@@ -394,9 +394,9 @@ Populate list of particle pairs
   - `dimension::Int`:              spatial dimension of problem
   - `r::StateData`:                input arrays of particle positions by particle type and id
   - `radius::StateData`:           input arrays of particle radi by particle type and id
-  - `neighborindexes::Array{Int}`: output array of neighbor particle global indexes
   - `particleids::Array{Int}`:     output array of local particle ids by type
   - `typeids::Array{Int}`:         output array of particle type ids
+  - `neighborindexes::Array{Int}`: output array of neighbor particle global indexes
 
 # Returns:
 
@@ -407,8 +407,8 @@ Populate list of particle pairs
 ```jldoctest
 # setup
 typeinfo::Array{TypeInfo} = []
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 1, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 1, typeinfo)
 
 # bins
 lower = [0.0, 1.0, 2.0]
@@ -425,7 +425,16 @@ radius = StateData{2}([[2.0, 2.0, 1.0], [2.0]])
 particleids::AbstractArray{Int} = []
 typeids::AbstractArray{Int} = []
 neighborindexes::AbstractArray{Int} = []
-buildpairlist!(typeinfo, bininfo, 3, r, radius, particleids, typeids, neighborindexes)
+Pulvis.buildpairlist!(
+    typeinfo,
+    bininfo,
+    3,
+    r,
+    radius,
+    particleids,
+    typeids,
+    neighborindexes,
+)
 
 # verify
 @assert particleids == [1, 2, 3, 1]
@@ -446,7 +455,7 @@ function buildpairlist!(
     radius::StateData,
     particleids::Array{Int},
     typeids::Array{Int},
-    nighborindexes::Array{Int},
+    neighborindexes::Array{Int},
 )
     # Update particle and type ids
     typeinfotoids!(typeinfo, particleids, typeids)
@@ -478,7 +487,6 @@ function buildpairlist!(
         # Check each neighbor bin
         binid = binids[particleindex]
         getneighborbinids!(bininfo, dimension, binid, neighborbinids)
-        println(neighborbinids)
         for neighborbin ∈ neighborbinids
             if neighborbin == -1
                 break
@@ -497,7 +505,7 @@ function buildpairlist!(
                     ((neighborid-1)*dimension+1):(neighborid*dimension),
                 )
                 if norm(r_i - r_j) <= radius_i
-                    push!(nighborindexes, neighborindex)
+                    push!(neighborindexes, neighborindex)
                     current += 1
                 end
             end

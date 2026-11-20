@@ -25,16 +25,16 @@ Set use of device computation
 
 ```jldoctest
 # set device computation
-setdevicecomputation(true)
+Pulvis.setdevicecomputation(true)
 
 # verify
-@assert computedensity! == computedensity_cuda!
+@assert Pulvis.computedensity! == Pulvis.computedensity_cuda!
 
 # set host computation
 setdevicecomputation(false)
 
 # verify
-@assert computedensity! == computedensity_cpu!
+@assert Pulvis.computedensity! == Pulvis.computedensity_cpu!
 
 # output
 

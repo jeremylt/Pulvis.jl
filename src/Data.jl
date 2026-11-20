@@ -32,14 +32,14 @@ Add a particle type name
 typeinfo::Array{TypeInfo} = []
 
 # add new type
-addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
 
 # verify
 @assert typeinfo[1].name == "foo"
 @assert typeinfo[1].count == 3
 
 # add second type
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # verify
 @assert typeinfo[2].name == "bar"
@@ -79,14 +79,14 @@ Add a particle state name and dimension
 stateinfo::Array{StateInfo} = []
 
 # add new state
-addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
 
 # verify
 @assert stateinfo[1].name == "baz"
 @assert stateinfo[1].dimension == 2
 
 # add second state
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # verify
 @assert stateinfo[2].name == "quux"
@@ -131,16 +131,16 @@ stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add new types
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # add new states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
 # -- add state for second type, allocate memory
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 
 # verify
 @assert length(statedata["baz"]) == 2
@@ -149,7 +149,7 @@ addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 @assert length(statedata["baz"][2]) == 8
 
 # -- add states for first type, don't allocate memory
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
 
 # verify
 @assert length(statedata["baz"]) == 2
@@ -236,31 +236,31 @@ stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add first type
-addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
 
 # add new states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
 # -- add states for first type, don't allocate memory
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
 
 # add new type
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # add more particle state data
 # -- add state for second type, allocate memory
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 
 # verify
 @assert length(statedata["baz"]) == 2
 @assert length(statedata["quux"]) == 1
 
 # get state data
-baz = getparticlestatedata(statedata, "baz")
-quux = getparticlestatedata(statedata, "quux")
-nix = getparticlestatedata(statedata, "nix")
+baz = Pulvis.getparticlestatedata(statedata, "baz")
+quux = Pulvis.getparticlestatedata(statedata, "quux")
+nix = Pulvis.getparticlestatedata(statedata, "nix")
 
 # verify
 @assert length(baz) == 2
@@ -303,34 +303,34 @@ Ensure all state data arrays have the same length
 
 ```jldoctest
 # setup
-typeinfo = []
-stateinfo = []
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add first type
-addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
 
 # add new states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
 # -- add states for first type, don't allocate memory
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, false)
 
 # add new type
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # add more particle state data
 # -- add state for second type, allocate memory
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 
 # verify
 @assert length(statedata["baz"]) == 2
 @assert length(statedata["quux"]) == 1
 
 # square off state arrays
-squareparticlestatedata!(typeinfo, stateinfo, statedata)
+Pulvis.squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 # verify
 @assert length(statedata["baz"]) == 2
@@ -403,19 +403,19 @@ stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add particle types
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # add particle states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 
 # square off state arrays
-squareparticlestatedata!(typeinfo, stateinfo, statedata)
+Pulvis.squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[1].count == 3
@@ -426,7 +426,7 @@ squareparticlestatedata!(typeinfo, stateinfo, statedata)
 newdata = Dict()
 newdata["baz"] = [1.0, 2.0]
 newdata["quux"] = [1.0, 2.0, 3.0]
-addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
+Pulvis.addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[1].count == 4
@@ -443,7 +443,7 @@ addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
 # add more particles
 newdata = Dict()
 newdata["baz"] = [1.0, 2.0, 3.0, 4.0]
-addparticles!("bar", 2, newdata, typeinfo, stateinfo, statedata)
+Pulvis.addparticles!("bar", 2, newdata, typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[2].count == 6
@@ -539,19 +539,19 @@ stateinfo::Array{StateInfo} = []
 statedata = Dict()
 
 # add particle types
-addparticletype!("foo", 3, typeinfo)
-addparticletype!("bar", 4, typeinfo)
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # add particle states
-addparticlestate!("baz", 2, stateinfo)
-addparticlestate!("quux", 3, stateinfo)
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
 
 # add particle state data
-addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
-addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, true)
 
 # square off state arrays
-squareparticlestatedata!(typeinfo, stateinfo, statedata)
+Pulvis.squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[1].count == 3
@@ -560,7 +560,7 @@ squareparticlestatedata!(typeinfo, stateinfo, statedata)
 @assert length(statedata["baz"][1]) == 6
 
 # remove particles
-removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
+Pulvis.removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[1].count == 1
@@ -575,7 +575,7 @@ removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
 @assert length(statedata["baz"][2]) == 8
 
 # remove more particles
-removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
+Pulvis.removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
 
 # verify
 @assert typeinfo[2].count == 2

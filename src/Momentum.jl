@@ -77,7 +77,7 @@ setkernelshape(Kernel.CubicSpline)
 setmomentumformulation(MomentumFormulation.Monagahn)
 
 # compute density
-momentumequationneighbors!(
+Pulvis.momentumequationneighbors!(
     particleindex,
     particleids,
     typeids,

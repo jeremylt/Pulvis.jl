@@ -2,6 +2,34 @@
 # Open boundary conditions
 # ------------------------------------------------------------------------------
 
+boundaryfunctions = []
+boundarynormal::Array{SArray{PulvisScalar,3}} = [[]]
+
+"""
+```julia
+prescribeopenboundarystates!(
+    time,
+    dimension,
+    boundaryid,
+    r,
+    v,
+)
+```
+
+Set values of boundary particles based upon prescribed boundary functions
+
+# Arguments:
+
+  - `time::PulvisScalar`:     current solver time
+  - `dimension::Int`:         spatial dimension of problem
+  - `boundaryid::Array{Int}`: input array of particle boundary ids
+  - `r::Array{PulvisScalar}`: input array of particle positions
+  - `v::Array{PulvisScalar}`: output array of particle velocities
+
+# Returns:
+
+  - none
+"""
 function prescribeopenboundarystates!(
     time::PulvisScalar,
     dimension::Int,

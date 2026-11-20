@@ -175,7 +175,7 @@ function addparticlestatedata!(
     @assert typeindex != nothing "Type not known"
 
     # Loop over state names for the type
-    for statename in statenames
+    for statename ∈ statenames
         hasstate = haskey(statedata, statename)
         statelength = hasstate ? length(statedata[statename]) : 0
         stateindex = findfirst(s -> s.name == statename, stateinfo)

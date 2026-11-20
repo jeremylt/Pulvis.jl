@@ -22,8 +22,8 @@ Prepare for timestep; apply the open boundary conditions, update local particle 
 # Arguments:
 
   - `bininfo::BinInfo`:            info about background bin layout
-  - `dimension::Int`:              spatial dimension of problem
   - `time::PulvisScalar`:          current solver time
+  - `dimension::Int`:              spatial dimension of problem
   - `typeinfo::Array{TypeInfo}`:   input array of particle type information
   - `stateinfo::Array{StateInfo}`: input array of particle state information
   - `statedata::Dict`:             input/output dictionary of particle state data arrays

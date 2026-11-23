@@ -31,14 +31,105 @@ function prescribeopenboundarystates!(
     r::Array{PulvisScalar},
     v::Array{PulvisScalar},
 )
-    numparticles = Int(length(r) / dimension)
+    numparticles = length(boundaryid)
 
-    for particleid ∈ 1:numparticles
-        boundaryid_i = boundaryid[particleid]
-        r_i = view(r, ((particleid-1)*dimension+1):(particleid*dimension))
+    for particleid_i ∈ 1:numparticles
+        boundaryid_i = boundaryid[particleid_i]
+        r_i = view(r, ((particleid_i-1)*dimension+1):(particleid_i*dimension))
 
-        v[((particleid-1)*dimension+1):(particleid*dimension)] .=
-            -boundaryfunctions[boundaryid_i](r_i, time, 0) * boundarynormal[boundaryid]
+        v[((particleid_i-1)*dimension+1):(particleid_i*dimension)] .=
+            -boundaryfunctions[boundaryid_i](r_i, time, 0) * boundarynormal[boundaryid_i]
     end
     return nothing
+end
+
+function checkopenboundaryphasechange!(
+    maxinteractiondistance::PulvisScalar,
+    dimension::Int,
+    typeinfo,
+    stateinfo,
+    statedata,
+)
+    # Parameters
+    numparticleperdir = Int(round(maxinteractiondistance ./ initialparticlespacing))
+    tolopenboundarytofluid = 0.1 * initialparticlespacing
+
+    # Particles to move and remove
+    particlestomovetofluid::Vector{Int} = []
+    particlestoremoveboundary::Vector{Int} = []
+    particlestomovetoboundary::Vector{Int} = []
+    particlestoremovefluid::Vector{Int} = []
+
+    # Boundary particles
+    boundarytypeindex = findfirst(t -> t.name == "open boundary", typeinfo)
+    if boundarytypeindex != nothing
+        boundaryid = getparticlestatedata(statedata, "boundary id")[boundarytypeindex]
+        r = getparticlestatedata(statedata, "position")[boundarytypeindex]
+        numparticles = typeinfo[boundarytypeindex].numparticles
+
+        for particleid_i ∈ 1:numparticles
+            boundaryid_i = boundaryid[particleid_i]
+            r_i = view(r, ((particleid_i-1)*dimension+1):(particleid_i*dimension))
+
+            distancefromplane =
+                boundarynormal[boundaryid_i] ⋅ (r_i .- planepoints[boundaryid_i])
+            if distancefromplane < -tolopenboundarytofluid
+                # Change over to fluid phase
+                push!(particlestomovetofluid, particleid_i)
+                r_i .+=
+                    numparticleperdir *
+                    boundaryinitialparticlespacing[boundaryid_id] *
+                    boundarynormal[boundaryid_i]
+            elseif distancefromplane > maxinteractiondistance
+                push!(particlestoremove, particleid_i)
+            end
+        end
+    end
+
+    # Fluid particles
+    fluidtypeindex = findfirst(t -> t.name == "fluid phase", typeinfo)
+    if fluidtypeindex != nothing
+        r = getparticlestatedata(statedata, "position")[fluidtypeindex]
+        numparticles = typeinfo[fluidtypeindex].numparticles
+        numboundaries = length(boundarynormals)
+
+        for particleid_i ∈ 1:numparticles
+            for boundaryid_j ∈ 1:numboundaries
+                distancefromplane =
+                    boundarynormal[boundaryid_j] ⋅ (r_i .- planepoints[boundaryid_j])
+                if distancefromplane > 0.0
+                    push!(particlestomovetoboundary, particleid_i)
+                end
+            end
+        end
+    end
+
+    # Move boundary particles
+    copyparticles!(
+        "open boundary",
+        "fluid phase",
+        particlestomovetofluid,
+        particlestoremoveboundary,
+        typeinfo,
+        stateinfo,
+        statedata,
+    )
+    removeparticles!(
+        "open boundary",
+        particlestoremoveboundary,
+        typeinfo,
+        stateinfo,
+        statedata,
+    )
+    # Move fluid particles
+    copyparticles!(
+        "fluid phase",
+        "open boundary",
+        particlestomovetoboundary,
+        particlestoremovefluid,
+        typeinfo,
+        stateinfo,
+        statedata,
+    )
+    removeparticles!("fluid phase", particlestoremovefluid, typeinfo, stateinfo, statedata)
 end

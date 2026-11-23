@@ -13,3 +13,4 @@ To install and test, run
 
 ```
 $ julia --project -e 'using Pkg; Pkg.build(); Pkg.test("Pulvis")'
+```

@@ -351,7 +351,7 @@ function typeinfotoids!(
     # Count total particles
     numparticles = 0
     for info ∈ typeinfo
-        numparticles += info.count
+        numparticles += info.numparticles
     end
 
     # Resize if needed
@@ -363,9 +363,10 @@ function typeinfotoids!(
     # Map local and type ids to global arrays
     current = 0
     for i ∈ 1:length(typeinfo)
-        particleids[(current+1):(current+typeinfo[i].count)] .= 1:typeinfo[i].count
-        typeids[(current+1):(current+typeinfo[i].count)] .= i
-        current += typeinfo[i].count
+        particleids[(current+1):(current+typeinfo[i].numparticles)] .=
+            1:typeinfo[i].numparticles
+        typeids[(current+1):(current+typeinfo[i].numparticles)] .= i
+        current += typeinfo[i].numparticles
     end
     return nothing
 end

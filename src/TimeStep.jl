@@ -187,7 +187,15 @@ function posttimestep!(
     statedata::Dict,
 )
     # Boundaries
-    checkopenboundaryphasechange!(time, typeinfo, stateinfo, statedata)
+    checkopenboundaryphasechange!(
+        maxinteractiondistance,
+        dimension,
+        typeinfo,
+        stateinfo,
+        statedata,
+    )
+
+    # Standard phase change
     evaluatephasechange!(time, typeinfo, stateinfo, statedata)
 
     # Peridynamics

@@ -18,7 +18,7 @@ Add a particle type name
 # Arguments:
 
   - `name::String`:              name of new particle type
-  - `count::Int`:                number of particles by type
+  - `numparticles::Int`:         number of particles by type
   - `typeinfo::Array{TypeInfo}`: input/output array of particle type information
 
 # Returns:
@@ -36,22 +36,22 @@ Pulvis.addparticletype!("foo", 3, typeinfo)
 
 # verify
 @assert typeinfo[1].name == "foo"
-@assert typeinfo[1].count == 3
+@assert typeinfo[1].numparticles == 3
 
 # add second type
 Pulvis.addparticletype!("bar", 4, typeinfo)
 
 # verify
 @assert typeinfo[2].name == "bar"
-@assert typeinfo[2].count == 4
+@assert typeinfo[2].numparticles == 4
 
 # output
 
 ```
 """
-function addparticletype!(name::String, count::Int, typeinfo::Array{TypeInfo})
+function addparticletype!(name::String, numparticles::Int, typeinfo::Array{TypeInfo})
     @assert findfirst(t -> t.name == name, typeinfo) == nothing "Types must have unique names"
-    push!(typeinfo, TypeInfo(name, count))
+    push!(typeinfo, TypeInfo(name, numparticles))
     return nothing
 end
 
@@ -204,7 +204,7 @@ function addparticlestatedata!(
         if initialize
             resize!(
                 statedata[statename][typeindex],
-                typeinfo[typeindex].count * stateinfo[stateindex].dimension,
+                typeinfo[typeindex].numparticles * stateinfo[stateindex].dimension,
             )
         end
     end
@@ -418,9 +418,9 @@ Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, tru
 Pulvis.squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[1].count == 3
-@assert length(statedata["quux"][1]) == 9
+@assert typeinfo[1].numparticles == 3
 @assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
 
 # add particles
 newdata = Dict()
@@ -429,16 +429,16 @@ newdata["quux"] = [1.0, 2.0, 3.0]
 Pulvis.addparticles!("foo", 1, newdata, typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[1].count == 4
-@assert length(statedata["quux"][1]) == 12
-@assert Vector(statedata["quux"][1])[(end-2):end] ≈ newdata["quux"]
+@assert typeinfo[1].numparticles == 4
 @assert length(statedata["baz"][1]) == 8
 @assert Vector(statedata["baz"][1])[(end-1):end] ≈ newdata["baz"]
+@assert length(statedata["quux"][1]) == 12
+@assert Vector(statedata["quux"][1])[(end-2):end] ≈ newdata["quux"]
 
 # verify
-@assert typeinfo[2].count == 4
-@assert length(statedata["quux"][2]) == 0
+@assert typeinfo[2].numparticles == 4
 @assert length(statedata["baz"][2]) == 8
+@assert length(statedata["quux"][2]) == 0
 
 # add more particles
 newdata = Dict()
@@ -446,10 +446,10 @@ newdata["baz"] = [1.0, 2.0, 3.0, 4.0]
 Pulvis.addparticles!("bar", 2, newdata, typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[2].count == 6
-@assert length(statedata["quux"][2]) == 0
+@assert typeinfo[2].numparticles == 6
 @assert length(statedata["baz"][2]) == 12
 @assert Vector(statedata["baz"][2])[(end-3):end] ≈ newdata["baz"]
+@assert length(statedata["quux"][2]) == 0
 
 # output
 
@@ -490,10 +490,13 @@ function addparticles!(
             # Add the target particles in the target type
             data = adapt(Vector{PulvisScalar}, statedata[statename][typeindex])
             if length(statedata[statename]) <
-               ((typeinfo[typeindex].count + numparticles) * statedimension)
-                resize!(data, (typeinfo[typeindex].count + numparticles) * statedimension)
+               ((typeinfo[typeindex].numparticles + numparticles) * statedimension)
+                resize!(
+                    data,
+                    (typeinfo[typeindex].numparticles + numparticles) * statedimension,
+                )
             end
-            data[(typeinfo[typeindex].count*statedimension+1):((typeinfo[typeindex].count+numparticles)*statedimension)] .=
+            data[(typeinfo[typeindex].numparticles*statedimension+1):((typeinfo[typeindex].numparticles+numparticles)*statedimension)] .=
                 newdata[statename]
             newstatedata[typeindex] = adapt(PulvisVector{PulvisScalar}, data)
             # Copy the rest of the current pointers
@@ -507,7 +510,8 @@ function addparticles!(
         end
     end
     # Finally increase particle count
-    typeinfo[typeindex] = TypeInfo(typename, typeinfo[typeindex].count + numparticles)
+    typeinfo[typeindex] =
+        TypeInfo(typename, typeinfo[typeindex].numparticles + numparticles)
     return nothing
 end
 
@@ -554,34 +558,34 @@ Pulvis.addparticlestatedata!("bar", typeinfo, ["baz"], stateinfo, statedata, tru
 Pulvis.squareparticlestatedata!(typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[1].count == 3
+@assert typeinfo[1].numparticles == 3
 # note that allocated lengths should not decrease
-@assert length(statedata["quux"][1]) == 9
 @assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
 
 # remove particles
 Pulvis.removeparticles!("foo", [1, 3], typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[1].count == 1
+@assert typeinfo[1].numparticles == 1
 # note that allocated lengths should not decrease
-@assert length(statedata["quux"][1]) == 9
 @assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
 
 # verify
-@assert typeinfo[2].count == 4
+@assert typeinfo[2].numparticles == 4
 # note that allocated lengths should not decrease
-@assert length(statedata["quux"][2]) == 0
 @assert length(statedata["baz"][2]) == 8
+@assert length(statedata["quux"][2]) == 0
 
 # remove more particles
 Pulvis.removeparticles!("bar", [2, 3], typeinfo, stateinfo, statedata)
 
 # verify
-@assert typeinfo[2].count == 2
+@assert typeinfo[2].numparticles == 2
 # note that allocated lengths should not decrease
-@assert length(statedata["quux"][2]) == 0
 @assert length(statedata["baz"][2]) == 8
+@assert length(statedata["quux"][2]) == 0
 
 # output
 
@@ -610,7 +614,7 @@ function removeparticles!(
         newstatedata[1:(typeindex-1)] .= statedata[statename][1:(typeindex-1)]
         # Drop the target particles in the target type
         data = adapt(Vector{PulvisScalar}, statedata[statename][typeindex])
-        numparticles = typeinfo[typeindex].count
+        numparticles = typeinfo[typeindex].numparticles
         for id ∈ particleids
             if id < length(data)
                 data[(id*statedimension):((numparticles-1)*statedimension)] .=
@@ -629,7 +633,170 @@ function removeparticles!(
         )
     end
     # Finally decrease particle count
-    typeinfo[typeindex] =
-        TypeInfo(typeinfo[typeindex].name, typeinfo[typeindex].count - length(particleids))
+    typeinfo[typeindex] = TypeInfo(
+        typeinfo[typeindex].name,
+        typeinfo[typeindex].numparticles - length(particleids),
+    )
+    return nothing
+end
+
+"""
+```julia
+copyparticles!(typenamesource, typenamedestination, particleidstocopy, particleidstoremove, typeinfo, stateinfo, particledata)
+```
+
+Copy particles from one type to another by local id numbers in the source type
+
+# Arguments:
+
+  - `typenamesource::String`:          name of particle type to move particles from
+  - `typenamedestination::String`:     name of particle type to move particles to
+  - `particleidstocopy::Array{Int}`:   input array of particle source local id numbers for particles to copy
+  - `particleidstoremove::Array{Int}`: input/output array of particle local id numbers for particles to remove
+  - `typeinfo::Array{TypeInfo}`:       input array of particle type information
+  - `stateinfo::Array{StateInfo}`:     input array of particle state information
+  - `statedata::Dict`:                 input/output dictionary of particle state data arrays
+
+# Returns:
+
+  - none
+
+# Example:
+
+```jldoctest
+# setup
+typeinfo::Array{TypeInfo} = []
+stateinfo::Array{StateInfo} = []
+statedata = Dict()
+
+# add particle types
+Pulvis.addparticletype!("foo", 3, typeinfo)
+Pulvis.addparticletype!("bar", 4, typeinfo)
+
+# add particle states
+Pulvis.addparticlestate!("baz", 2, stateinfo)
+Pulvis.addparticlestate!("quux", 3, stateinfo)
+
+# add particle state data
+Pulvis.addparticlestatedata!("foo", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+Pulvis.addparticlestatedata!("bar", typeinfo, ["baz", "quux"], stateinfo, statedata, true)
+
+# verify
+@assert typeinfo[1].numparticles == 3
+# note that allocated lengths should not decrease
+@assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
+
+# verify
+@assert typeinfo[2].numparticles == 4
+# note that allocated lengths should not decrease
+@assert length(statedata["baz"][2]) == 8
+@assert length(statedata["quux"][2]) == 12
+
+# set state values that are easy to track
+statedata["baz"][1] .= 1:6
+statedata["quux"][1] .= 11:19
+
+# move particles
+particlestomove::Vector{Int} = [1, 3]
+particlestoremove::Vector{Int} = []
+Pulvis.copyparticles!("foo", "bar", particlestomove, particlestoremove, typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[1].numparticles == 3
+# note that allocated lengths should not decrease
+@assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
+
+# verify
+@assert typeinfo[2].numparticles == 6
+# note that allocated lengths should increase
+@assert length(statedata["baz"][2]) == 12
+@assert Vector(statedata["baz"][2])[9:end] == [1, 2, 5, 6]
+@assert length(statedata["quux"][2]) == 18
+@assert Vector(statedata["quux"][2])[13:end] == [11, 12, 13, 17, 18, 19]
+
+# remove particles
+Pulvis.removeparticles!("foo", particlestoremove, typeinfo, stateinfo, statedata)
+
+# verify
+@assert typeinfo[1].numparticles == 1
+# note that allocated lengths should not decrease
+@assert length(statedata["baz"][1]) == 6
+@assert length(statedata["quux"][1]) == 9
+
+# verify
+@assert typeinfo[2].numparticles == 6
+# note that allocated lengths should not decrease
+@assert length(statedata["baz"][2]) == 12
+@assert length(statedata["quux"][2]) == 18
+
+# output
+
+```
+"""
+function copyparticles!(
+    typenamesource::String,
+    typenamedestination::String,
+    particleidstocopy::Array{Int},
+    particleidstoremove::Array{Int},
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
+    statedata::Dict,
+)
+    typelength = length(typeinfo)
+    typeindexsource = findfirst(t -> t.name == typenamesource, typeinfo)
+    @assert typeindexsource != nothing "Source type not known"
+    typeindexdestination = findfirst(t -> t.name == typenamedestination, typeinfo)
+    @assert typeindexdestination != nothing "Destination type not known"
+    sort(particleidstocopy)
+
+    # Loop over all states
+    numparticlestomove = length(particleidstocopy)
+    for i ∈ 1:length(stateinfo)
+        statename = stateinfo[i].name
+        statedimension = stateinfo[i].dimension
+        newstatedata = []
+        resize!(newstatedata, typelength)
+
+        # Copy current pointers
+        newstatedata[1:(typeindexdestination-1)] .=
+            statedata[statename][1:(typeindexdestination-1)]
+        # Move the target particles in the target type
+        datasource = adapt(Vector{PulvisScalar}, statedata[statename][typeindexsource])
+        datadestination =
+            adapt(Vector{PulvisScalar}, statedata[statename][typeindexdestination])
+        # Resize if needed
+        numparticlesdestination = typeinfo[typeindexdestination].numparticles
+        if length(datadestination) <
+           ((numparticlesdestination + numparticlestomove) * statedimension)
+            resize!(
+                datadestination,
+                (numparticlesdestination + numparticlestomove) * statedimension,
+            )
+        end
+        for id ∈ particleidstocopy
+            datadestination[(numparticlesdestination*statedimension+1):((numparticlesdestination+1)*statedimension)] .=
+                datasource[((id-1)*statedimension+1):(id*statedimension)]
+            numparticlesdestination += 1
+        end
+        newstatedata[typeindexdestination] =
+            adapt(PulvisVector{PulvisScalar}, datadestination)
+        # Copy the rest of the current pointers
+        newstatedata[(typeindexdestination+1):typelength] .=
+            statedata[statename][(typeindexdestination+1):typelength]
+        # And copy to execution space
+        statedata[statename] = adapt(
+            PulvisVector,
+            StateData{typelength,PulvisVector{PulvisScalar}}(newstatedata),
+        )
+    end
+    # Mark particles to remove
+    append!(particleidstoremove, particleidstocopy)
+    # Finally increase particle count
+    typeinfo[typeindexdestination] = TypeInfo(
+        typeinfo[typeindexdestination].name,
+        typeinfo[typeindexdestination].numparticles + length(particleidstocopy),
+    )
     return nothing
 end

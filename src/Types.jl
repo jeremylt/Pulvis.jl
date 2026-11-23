@@ -8,7 +8,7 @@ PulvisVector = CuVector
 
 struct TypeInfo
     name::String
-    count::Int
+    numparticles::Int
 end
 
 struct StateInfo

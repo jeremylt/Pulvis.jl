@@ -45,7 +45,13 @@ end
 
 """
 ```julia
-checkopenboundaryphasechange!(maxinteractiondistance, dimension, typeinfo, stateinfo, statedata)
+checkopenboundaryphasechange!(
+    maxinteractiondistance,
+    dimension,
+    typeinfo,
+    stateinfo,
+    statedata,
+)
 ```
 
 Set values of boundary particles based upon prescribed boundary functions
@@ -151,4 +157,5 @@ function checkopenboundaryphasechange!(
         statedata,
     )
     removeparticles!("fluid phase", particlestoremovefluid, typeinfo, stateinfo, statedata)
+    return nothing
 end

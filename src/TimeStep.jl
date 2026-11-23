@@ -77,6 +77,7 @@ function pretimestep!(
         typeids,
         nighborindexes,
     )
+    return nothing
 end
 
 """
@@ -152,6 +153,7 @@ function evaluatetimestep!(
         v_modified,
         a_modified,
     )
+    return nothing
 end
 
 """
@@ -197,9 +199,10 @@ function posttimestep!(
         statedata,
     )
 
-    # Standard phase change
-    evaluatephasechange!(typeinfo, stateinfo, statedata)
+    # Standard phase change - TODO
+    # evaluatephasechange!(typeinfo, stateinfo, statedata)
 
-    # Peridynamics
+    # Peridynamics - TODO
     # evaluatedamage(typeinfo, stateinfo, statedata)
+    return nothing
 end

@@ -642,7 +642,15 @@ end
 
 """
 ```julia
-copyparticles!(typenamesource, typenamedestination, particleidstocopy, particleidstoremove, typeinfo, stateinfo, particledata)
+copyparticles!(
+    typenamesource,
+    typenamedestination,
+    particleidstocopy,
+    particleidstoremove,
+    typeinfo,
+    stateinfo,
+    particledata,
+)
 ```
 
 Copy particles from one type to another by local id numbers in the source type
@@ -700,7 +708,15 @@ statedata["quux"][1] .= 11:19
 # move particles
 particlestomove::Vector{Int} = [1, 3]
 particlestoremove::Vector{Int} = []
-Pulvis.copyparticles!("foo", "bar", particlestomove, particlestoremove, typeinfo, stateinfo, statedata)
+Pulvis.copyparticles!(
+    "foo",
+    "bar",
+    particlestomove,
+    particlestoremove,
+    typeinfo,
+    stateinfo,
+    statedata,
+)
 
 # verify
 @assert typeinfo[1].numparticles == 3

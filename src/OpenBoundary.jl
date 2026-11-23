@@ -43,16 +43,35 @@ function prescribeopenboundarystates!(
     return nothing
 end
 
+"""
+```julia
+checkopenboundaryphasechange!(maxinteractiondistance, dimension, typeinfo, stateinfo, statedata)
+```
+
+Set values of boundary particles based upon prescribed boundary functions
+
+# Arguments:
+
+  - `maxinteractiondistance::PulvisScalar`: max distance between particles for interaction
+  - `dimension::Int`:                       spatial dimension of problem
+  - `typeinfo::Array{TypeInfo}`:            input/output array of particle type information
+  - `stateinfo::Array{StateInfo}`:          input array of particle state information
+  - `statedata::Dict`:                      input/output dictionary of particle state data arrays
+
+# Returns:
+
+  - none
+"""
 function checkopenboundaryphasechange!(
     maxinteractiondistance::PulvisScalar,
     dimension::Int,
-    typeinfo,
-    stateinfo,
-    statedata,
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
+    statedata::Dict,
 )
     # Parameters
-    numparticleperdir = Int(round(maxinteractiondistance ./ initialparticlespacing))
-    tolopenboundarytofluid = 0.1 * initialparticlespacing
+    numparticlesperdirection = Int(round(maxinteractiondistance ./ initialparticlespacing))
+    toleranceopenboundarytofluid = 0.1 * initialparticlespacing
 
     # Particles to move and remove
     particlestomovetofluid::Vector{Int} = []
@@ -73,11 +92,11 @@ function checkopenboundaryphasechange!(
 
             distancefromplane =
                 boundarynormal[boundaryid_i] ⋅ (r_i .- planepoints[boundaryid_i])
-            if distancefromplane < -tolopenboundarytofluid
+            if distancefromplane < -toleranceopenboundarytofluid[boundaryid_i]
                 # Change over to fluid phase
                 push!(particlestomovetofluid, particleid_i)
                 r_i .+=
-                    numparticleperdir *
+                    numparticlesperdirection[boundaryid_i] *
                     boundaryinitialparticlespacing[boundaryid_id] *
                     boundarynormal[boundaryid_i]
             elseif distancefromplane > maxinteractiondistance

@@ -171,19 +171,21 @@ Conclude time step; check boundary phase changes, evaluate peridynamic damage, e
 
 # Arguments:
 
-  - `time::PulvisScalar`:          current solver time
-  - `typeinfo::Array{TypeInfo}`:   input array of particle type information
-  - `stateinfo::Array{StateInfo}`: input array of particle state information
-  - `statedata::Dict`:             input/output dictionary of particle state data arrays
+  - `maxinteractiondistance::PulvisScalar`: max distance between particles for interaction
+  - `dimension::Int`:                       spatial dimension of problem
+  - `typeinfo::Array{TypeInfo}`:            input/output array of particle type information
+  - `stateinfo::Array{StateInfo}`:          input array of particle state information
+  - `statedata::Dict`:                      input/output dictionary of particle state data arrays
 
 # Returns:
 
   - none
 """
 function posttimestep!(
-    time::PulvisScalar,
-    typeinfo::Array,
-    stateinfo::Array,
+    maxinteractiondistance::PulvisScalar,
+    dimension::Int,
+    typeinfo::Array{TypeInfo},
+    stateinfo::Array{StateInfo},
     statedata::Dict,
 )
     # Boundaries
@@ -196,8 +198,8 @@ function posttimestep!(
     )
 
     # Standard phase change
-    evaluatephasechange!(time, typeinfo, stateinfo, statedata)
+    evaluatephasechange!(typeinfo, stateinfo, statedata)
 
     # Peridynamics
-    # evaluatedamage(time, typeinfo, stateinfo, statedata)
+    # evaluatedamage(typeinfo, stateinfo, statedata)
 end

@@ -2,12 +2,6 @@
 # Particle data
 # ------------------------------------------------------------------------------
 
-typeinfo::Array{TypeInfo} = []
-stateinfo::Array{StateInfo} = []
-statedata::Dict = Dict()
-particleids::AbstractArray{Int} = []
-typeids::AbstractArray{Int} = []
-
 """
 ```julia
 addparticletype!(name, typeinfo)

@@ -2,7 +2,7 @@
 # Binning particles
 # ------------------------------------------------------------------------------
 
-bins::Vector{Vector{Int}} = [[]]
+bins::Vector{Vector{Int}} = []
 binids::Vector{Int} = []
 
 """

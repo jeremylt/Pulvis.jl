@@ -154,6 +154,7 @@ function integratetimestep_sph!(
     statedata::Dict,
 )
     # Timestepper pre step routine - TODO
+    preinteractionroutine!(timeinfo, typeinfo, stateinfo, statedata)
 
     # Note - updateconnectivitiy method from 4C omitted here because this code is MPI local or run without MPI
 

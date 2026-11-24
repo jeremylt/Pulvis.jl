@@ -27,6 +27,7 @@ include("Data.jl")
 include("Enums.jl")
 include("Kernels.jl")
 include("OpenBoundary.jl")
+include("Setup.jl")
 
 # Physics
 include("EquationsOfState.jl")

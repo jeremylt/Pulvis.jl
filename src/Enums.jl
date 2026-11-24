@@ -106,3 +106,27 @@ DEM = 2
 @enum Type SPH PD DEM
 
 end # submodule
+
+
+module TimeIntegrator
+
+"""
+Time integrator
+
+# Type:
+
+  - `SemiImplicitEuler`: Semi-implicit Euler
+
+# Example:
+
+```@jldoctest
+TimeIntegrator.Type
+
+# output
+Enum Pulvis.TimeIntegrator.Type:
+SemiImplicitEuler = 0
+```
+"""
+@enum Type SemiImplicitEuler
+
+end # submodule

@@ -44,7 +44,7 @@ function timeloop!(
     stateinfo::Array{StateInfo},
     statedata::Dict,
 )
-    while continuesimulation()
+    while timeinfo[1].current < timeinfo[1].final
         # Counter and print header
         preparetimestep!(timeinfo)
 
@@ -52,7 +52,7 @@ function timeloop!(
         preevaluatetimestep!(
             bininfo,
             dimension,
-            timeinfo[1].time,
+            timeinfo[1].current,
             typeinfo,
             stateinfo,
             statedata,
@@ -106,8 +106,12 @@ Update current time and step number for current time step
   - nothing
 """
 function preparetimestep!(timeinfo::Array{TimeInfo})
-    timeinfo[1] =
-        TimeInfo(timeinfo[1].time + timeinfo[1].dt, timeinfo[1].dt, timeinfo[1].step + 1)
+    timeinfo[1] = TimeInfo(
+        timeinfo[1].step + 1,
+        timeinfo[1].current + timeinfo[1].dt,
+        timeinfo[1].dt,
+        timeinfo[1].final,
+    )
     return nothing
 end
 

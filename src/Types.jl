@@ -24,7 +24,8 @@ struct BinInfo
 end
 
 struct TimeInfo
-    time::PulvisScalar
-    dt::PulvisScalar
     step::Int
+    current::PulvisScalar
+    dt::PulvisScalar
+    final::PulvisScalar
 end

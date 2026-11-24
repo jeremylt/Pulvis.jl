@@ -22,7 +22,7 @@ Set values of boundary particles based upon prescribed boundary functions
 
 # Returns:
 
-  - none
+  - nothing
 """
 function prescribeopenboundarystates!(
     time::PulvisScalar,
@@ -66,7 +66,7 @@ Set values of boundary particles based upon prescribed boundary functions
 
 # Returns:
 
-  - none
+  - nothing
 """
 function checkopenboundaryphasechange!(
     maxinteractiondistance::PulvisScalar,

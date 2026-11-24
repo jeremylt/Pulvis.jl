@@ -15,11 +15,11 @@ Set the equations of state
 
 # Arguments:
 
-  - `type::EquationOfState.Type`: type of equations of state to use
+  - `equationstype::EquationOfState.Type`: type of equations of state to use
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

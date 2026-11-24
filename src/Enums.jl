@@ -78,3 +78,31 @@ Adami = 1
 @enum Type Monagahn Adami
 
 end # submodule
+
+
+module InteractionModel
+
+"""
+Interaction model
+
+# Type:
+
+  - `SPH`: Smoothed particle hydrodynamics
+  - `PD`:  Peridynamics
+  - `DEM`: Discrete element method
+
+# Example:
+
+```@jldoctest
+InteractionModel.Type
+
+# output
+Enum Pulvis.InteractionModel.Type:
+SPH = 0
+PD = 1
+DEM = 2
+```
+"""
+@enum Type SPH PD DEM
+
+end # submodule

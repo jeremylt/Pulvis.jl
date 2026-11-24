@@ -20,7 +20,7 @@ Set the kernel shape function
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

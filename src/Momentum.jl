@@ -47,7 +47,7 @@ Sum the momentum contributions to the particle from neighbor particles
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

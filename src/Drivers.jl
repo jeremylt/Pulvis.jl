@@ -19,7 +19,7 @@ Set use of device computation
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

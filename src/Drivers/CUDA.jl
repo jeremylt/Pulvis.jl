@@ -22,7 +22,7 @@ Compute the density of a single particle on a single GPU thread
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computedensity_particle!(
     particleids::Array,
@@ -76,7 +76,7 @@ Compute the density of all particles on the GPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computedensity_cuda!(
     particleids::Array,
@@ -125,7 +125,7 @@ Compute the pressure for single particle on a single GPU thread
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computepressure_particle!(
     particleids::Array{Int},
@@ -174,7 +174,7 @@ Compute the pressure for all particles on the GPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computepressure_cuda!(
     particleids::Array{Int},
@@ -246,7 +246,7 @@ Compute the forces for a single particle on a single GPU thread
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computeforces_particle!(
     particleids::Array{Int},
@@ -332,7 +332,7 @@ Compute the forces for all particles on the GPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computeforces_cuda!(
     particleids::Array{Int},

@@ -19,7 +19,7 @@ Set the momentum formulation
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -59,5 +59,5 @@ function setmomentumformulation(formulationtype::MomentumFormulation.Type)
     return nothing
 end
 
-# Default kernel - Monagahn
+# Default momentum formulation - Monagahn
 setmomentumformulation(MomentumFormulation.Monagahn)

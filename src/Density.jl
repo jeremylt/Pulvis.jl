@@ -19,7 +19,7 @@ Compute the density of the particle from the shape function, radius, and mass
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -86,7 +86,7 @@ Sum the density contributions to the particle from neighbor particles
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

@@ -218,7 +218,7 @@ Assign particles to bins
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -318,7 +318,7 @@ Convert `TypeInfo` array into global arrays of local particle ids by type and pa
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -401,7 +401,7 @@ Populate list of particle pairs
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

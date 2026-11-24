@@ -19,7 +19,7 @@ Compute the gradient of the kernel
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

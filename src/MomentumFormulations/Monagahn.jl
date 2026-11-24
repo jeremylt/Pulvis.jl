@@ -69,7 +69,7 @@ Compute the pressure gradient
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -148,7 +148,7 @@ Compute the shear forces
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -258,7 +258,7 @@ Compute the background pressure forces
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -326,7 +326,7 @@ Compute the generalized background pressure forces
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -408,7 +408,7 @@ Compute the modified velocity force contribution
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

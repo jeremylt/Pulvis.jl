@@ -33,6 +33,7 @@ include("EquationsOfState.jl")
 include("Density.jl")
 include("MomentumFormulations.jl")
 include("Momentum.jl")
+include("InteractionModels.jl")
 
 # Time stepping
 include("TimeStep.jl")
@@ -46,7 +47,7 @@ include("Drivers.jl")
 
 export PulvisScalar, StateData, PulvisVector
 export TypeInfo, StateInfo, BinInfo
-export Kernel, MomentumFormulation, EquationOfState
+export Kernel, MomentumFormulation, EquationOfState, InteractionModel
 export setkernelshape, setmomentumformulation, setequationsofstate
 export setdevicecomputation
 

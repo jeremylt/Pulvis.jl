@@ -23,7 +23,7 @@ Add a particle type name
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -70,7 +70,7 @@ Add a particle state name and dimension
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -120,7 +120,7 @@ Add new particle state arrays for particle type
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -297,7 +297,7 @@ Ensure all state data arrays have the same length
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -392,7 +392,7 @@ Add new particle state arrays for particle type
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -532,7 +532,7 @@ Remove particles by local id numbers
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 
@@ -667,7 +667,7 @@ Copy particles from one type to another by local id numbers in the source type
 
 # Returns:
 
-  - none
+  - nothing
 
 # Example:
 

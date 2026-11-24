@@ -22,7 +22,7 @@ Compute the density of all particles on the CPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computedensity_cpu!(
     particleids::Array{Int},
@@ -78,7 +78,7 @@ Compute the pressure for all particles on the CPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computepressure_cpu!(
     particleids::Array{Int},
@@ -152,7 +152,7 @@ Compute the forces for all particles on the CPU
 
 # Returns:
 
-  - none
+  - nothing
 """
 function computeforces_cpu!(
     particleids::Array{Int},

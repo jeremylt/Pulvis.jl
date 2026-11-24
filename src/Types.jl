@@ -22,3 +22,9 @@ struct BinInfo
     width::PulvisScalar
     counts::Array{Int}
 end
+
+struct TimeInfo
+    time::PulvisScalar
+    dt::PulvisScalar
+    step::Int
+end
